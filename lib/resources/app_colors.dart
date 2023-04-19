@@ -8,6 +8,11 @@ class AppColors {
   static const Color BUTTON_TEXT_COLOR_WHITE = Color.fromARGB(255, 40, 40, 40);
   static const Color TEXT_COLOR_GRAY = Color.fromARGB(255, 71, 71, 71);
 
+  static const Color APPBAR_TEXT = Color.fromARGB(255, 255, 255, 255);
+
+  static const Color MESSAGE_STUDENT_COLOR = Color(0xFF16387F);
+  static const Color MESSAGE_BOT_COLOR = Color.fromARGB(255, 255, 255, 255);
+
 
   static const Color TEXTFIELD_BACKGROUND = Color(0xFFEEEEEE);
   static const Color PRIMARY_COLOR = Color(0xFF306AC6);

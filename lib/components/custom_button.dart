@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
 
-class BottomButton extends StatelessWidget {
-  const BottomButton(
+class CustomButton extends StatelessWidget {
+  const CustomButton(
       {Key? key,
       required this.tap,
       required this.text,
@@ -29,7 +29,7 @@ class BottomButton extends StatelessWidget {
       onTap: tap,
       child: Container(
         width: double.infinity,
-        height: AppDimensions.BOTTOM_BUTTON_DIMENSIONS_HEIGHT,
+        height: AppDimensions.BUTTON_DIMENSIONS_HEIGHT,
         padding: this.padding,
         margin: this.margin,
         decoration: BoxDecoration(
