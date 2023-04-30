@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
-
 class ChatMessage{
   String message;
   String sender;
-  ChatMessage({required this.message, required this.sender});
+  DateTime date;
+  ChatMessage({required this.message, required this.sender, required this.date});
 }

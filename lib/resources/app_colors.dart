@@ -13,7 +13,7 @@ class AppColors {
   static const Color MESSAGE_STUDENT_COLOR = Color(0xFF16387F);
   static const Color MESSAGE_BOT_COLOR = Color.fromARGB(255, 255, 255, 255);
 
-
+  static const Color WHITE = Color.fromARGB(255, 255, 255, 255);
   static const Color TEXTFIELD_BACKGROUND = Color(0xFFEEEEEE);
   static const Color PRIMARY_COLOR = Color(0xFF306AC6);
   static const Color PRIMARY_COLOR_LIGHT = Color(0xFFA5CFF1);
