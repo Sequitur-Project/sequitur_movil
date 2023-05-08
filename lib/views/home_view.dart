@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:sequitur_movil/components/custom_button_small.dart';
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/models/user_model.dart';
 
@@ -11,6 +12,8 @@ import 'package:sequitur_movil/components/custom_text_field.dart';
 import 'package:sequitur_movil/components/title_desc.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
+import 'package:sequitur_movil/views/appointment_view.dart';
+import 'package:sequitur_movil/views/bitacora_view.dart';
 import 'package:sequitur_movil/views/chat_view.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
 
@@ -97,7 +100,7 @@ class _HomeViewState extends State<HomeView> {
                       Consumer<CurrentUserModel>(
                         builder: (context, currentUserModel, child) {
                           return Text(
-                            '¡Hola ${currentUserModel.myCurrentUser.firstName}!',
+                            'Hola ${currentUserModel.myCurrentUser.firstName}',
                             style: TextStyle(
                                 color: AppColors.APPBAR_TEXT, fontSize: 15),
                           );
@@ -122,7 +125,7 @@ class _HomeViewState extends State<HomeView> {
         child: Stack(children: <Widget>[
           Container(
               padding: EdgeInsets.only(
-                  top: AppDimensions.APPBAR_HEIGHT + 20, bottom: 10),
+                  top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 10),
               child: Column( children: <Widget>[ CustomButton(
                   isWhiteButton: true,
                   text: "CHAT",
@@ -136,10 +139,12 @@ class _HomeViewState extends State<HomeView> {
                     ); }
                   }),
                    SizedBox(
-                  height: 4,
+                  height: 13,
                  ),
-                  CustomButton(
+                  CustomButtonSmall(
+                  margin: EdgeInsets.symmetric(horizontal:15, vertical:2),
                   isWhiteButton: true,
+                  hasNotification: false,
                   text: "RESULTADOS",
                   tap: () {
                     final currentUser = Provider.of<CurrentUserModel>(context,listen: false);     
@@ -148,6 +153,40 @@ class _HomeViewState extends State<HomeView> {
                         
                       context,
                       MaterialPageRoute(builder: (context) => ResultsView()),
+                    );
+                  }),
+                   SizedBox(
+                  height: 4,
+                 ),
+                  CustomButtonSmall(
+                    hasNotification: false,
+                  margin: EdgeInsets.symmetric(horizontal:15, vertical:2),
+                  isWhiteButton: true,
+                  text: "BITACORA",
+                  tap: () {
+                    final currentUser = Provider.of<CurrentUserModel>(context,listen: false);     
+                    getConversation(currentUser.myCurrentUser.id);
+                    Navigator.push(
+                        
+                      context,
+                      MaterialPageRoute(builder: (context) => BitacoraView()),
+                    );
+                  }),
+                  SizedBox(
+                  height: 4,
+                 ),
+                  CustomButtonSmall(
+                    hasNotification: true,
+                  margin: EdgeInsets.symmetric(horizontal:15, vertical:2),
+                  isWhiteButton: true,
+                  text: "CITAS",
+                  tap: () {
+                    final currentUser = Provider.of<CurrentUserModel>(context,listen: false);     
+                    getConversation(currentUser.myCurrentUser.id);
+                    Navigator.push(
+                        
+                      context,
+                      MaterialPageRoute(builder: (context) => AppointmentView()),
                     );
                   }),
 

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sequitur_movil/models/current_user_model.dart';
+import 'package:sequitur_movil/views/bitacora_view.dart';
 import 'package:sequitur_movil/views/login_view.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+
+void main() async {
+  await initializeDateFormatting('es_ES', null);
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => CurrentUserModel(),

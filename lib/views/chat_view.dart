@@ -10,6 +10,7 @@ import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -46,8 +47,13 @@ class _ChatViewState extends State<ChatView> {
   List<ChatMessage> messages = [];
 
   bool _isSurveyTime = false;
+  bool _isLoading = true;
+
+
 
   Future<String> getHistory() async {
+        _isLoading = true;
+
         messages.clear();        
 
         var responseUser = await http.get(Uri.parse(url + "conversations/"+ convoId +"/studentMessages?page=0&size=99999"), headers: headers());
@@ -122,6 +128,8 @@ class _ChatViewState extends State<ChatView> {
 
 
         });
+         _isLoading = false;
+
           
         return messages.toString();
   }
@@ -155,7 +163,7 @@ class _ChatViewState extends State<ChatView> {
                   },
                   icon: Icon(
                     Icons.arrow_back,
-                    color: Color.fromARGB(255, 98, 184, 255),
+                    color: AppColors.APPBAR_TEXT,
                   ),
                 ),
                 SizedBox(
@@ -190,7 +198,7 @@ class _ChatViewState extends State<ChatView> {
                         height: 1,
                       ),
                       Text(
-                        "¡Conversemos!",
+                        "¿Como te encuentras?",
                         style: TextStyle(
                             color: AppColors.APPBAR_TEXT, fontSize: 15),
                       ),
@@ -209,7 +217,11 @@ class _ChatViewState extends State<ChatView> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(children:[
+        child: _isLoading ?
+        Center(
+        child: LoadingAnimationWidget.beat(color: AppColors.WHITE, size: 50),
+      )
+      : Column(children:[
         Expanded(
       child: SingleChildScrollView(
         
@@ -225,7 +237,7 @@ class _ChatViewState extends State<ChatView> {
               itemBuilder: (context, index) {
                 return Container(
                   padding:
-                      EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   child: Align(
                     alignment: (messages[index].sender == "bot"
                         ? Alignment.topLeft
@@ -238,7 +250,7 @@ class _ChatViewState extends State<ChatView> {
                             : AppColors.MESSAGE_BOT_COLOR),
                         boxShadow: [
                           BoxShadow(
-                            color: Color(0xFF183D8D).withOpacity(0.2),
+                            color: AppColors.BOX_SHADOW.withOpacity(0.2),
                             spreadRadius: 2,
                             blurRadius: 5,
                             offset: Offset(0, 3),
@@ -490,7 +502,7 @@ newMessage = {
                         color: Colors.white,
                         size: 18,
                       ),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppColors.BUTTON_COLOR,
                       elevation: 0,
                     ),
                   ],

@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sequitur_movil/components/bottom_button.dart';
+import 'package:sequitur_movil/components/bottom_button_dot.dart';
+import 'package:sequitur_movil/views/recs_view.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:sequitur_movil/components/custom_button.dart';
 import 'package:sequitur_movil/components/custom_text_field.dart';
@@ -35,7 +36,13 @@ class _ResultsViewState extends State<ResultsView> {
 
   final _controller = ScrollController();
   int score = 0;
+  String depresion = "";
+  String description = "";
   List dataResults = [];
+
+    List dataRecs = [];
+  
+  List<String> recs = [];
 
   Future<String> getResults() async {
     var responseResults = await http.get(
@@ -46,20 +53,61 @@ class _ResultsViewState extends State<ResultsView> {
       var extractdataResults = json.decode(responseResults.body);
       dataResults = extractdataResults['content'];
       score = dataResults.last['score'] - dataResults[dataResults.length - 2]['score'];
-      print(dataResults.last['score']);
+      print(dataResults.last);
     });
 
     return responseResults.body.toString();
+  }
+
+
+  Future<String> getRecs() async {
+    var responseRecs = await http.get(
+        Uri.parse(url + "students/1/recommendations"),
+        headers: headers());
+
+    setState(() {
+      var extractdataBitacora = json.decode(utf8.decode(responseRecs.bodyBytes));
+
+      dataRecs = extractdataBitacora['content'];
+      print(dataRecs); 
+
+      for (var info in dataRecs) {
+        recs.add(info['text']);
+      }
+
+    });
+    return responseRecs.body.toString();
   }
 
   @override
   void initState() {
     super.initState();
     getResults();
+    getRecs();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (score == 0) {
+      depresion = 'No Depresión';
+      description = 'No es necesario tratamiento para la depresión.';
+    } else if (score >= 1 && score <= 4) {
+      depresion = 'Depresión Leve';
+      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. .';
+    } else if (score >= 5 && score <= 9) {
+      depresion = 'Depresión Moderada';
+      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento.';
+    } else if (score >= 10 && score <= 14) {
+      depresion = 'Depresión Mínima';
+      description = 'Es posible no necesitar tratamiento para la depresión.';
+    } else if (score >= 15 && score <= 19) {
+      depresion = 'Depresión Moderadamente Severa';
+      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. Es posible se necesite medicamentos, terapia o una combinación de ambos.';
+    } else if (score >= 20 && score <= 27) {
+      depresion = 'Depresión Severa';
+      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. Será necesario el tratamiento de la depresión con medicamentos, terapia o una combinación de ambos.';
+    }
+
     final List<ChartData> chartData = [
       ChartData('David', 11, Color.fromRGBO(9, 0, 136, 1)),
       ChartData('David', 27, Color.fromRGBO(235, 235, 235, 1)),
@@ -83,7 +131,7 @@ class _ResultsViewState extends State<ResultsView> {
                   },
                   icon: Icon(
                     Icons.arrow_back,
-                    color: Color.fromARGB(255, 98, 184, 255),
+                    color: AppColors.APPBAR_TEXT,
                   ),
                 ),
                 SizedBox(
@@ -139,7 +187,7 @@ class _ResultsViewState extends State<ResultsView> {
           ),
           child: Container(
             padding: EdgeInsets.only(
-                  top: AppDimensions.APPBAR_HEIGHT + 20, bottom: 0),
+                  top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 0),
             child: Column(
               
               children: [
@@ -172,12 +220,20 @@ class _ResultsViewState extends State<ResultsView> {
                                           Text('Posible', style:
                                           TextStyle(fontSize: 15),),
                                           Text(
-                                                "Depresion severa",
+                                                depresion,
+                                                textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     color: Color.fromARGB(255, 31, 0, 0),
                                                     fontSize: 20,
                                                     fontWeight: FontWeight.w600),
                                               ),
+                                          Text(
+                                                description,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Color.fromARGB(255, 31, 0, 0),
+                                                    fontSize: 16,),
+                                              ),    
                                         ],
                                       ),
                                       )]             
@@ -188,12 +244,16 @@ class _ResultsViewState extends State<ResultsView> {
                     )),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: BottomButton(
+                  child: BottomButtonDot(
                       isWhiteButton: false,
                       text: "RECOMENDACIONES",
+                      circleText: recs.length.toString(),
                       tap: () {                        
                         setState(() {
-                          
+                             Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RecsView()),
+                          );
                         });                        
                       })),
               ],
