@@ -18,8 +18,8 @@ import 'package:sequitur_movil/views/chat_view.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:sequitur_movil/views/config_view.dart';
 import 'package:sequitur_movil/views/results_view.dart';
-
 
 class HomeView extends StatefulWidget {
   @override
@@ -27,21 +27,22 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  String url = "https://back-sequitur-production.up.railway.app/api/"; 
-    List dataConversation = [];
+  String url = "https://back-sequitur-production.up.railway.app/api/";
+  List dataConversation = [];
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-      final currentUser = Provider.of<CurrentUserModel>;  
+  final currentUser = Provider.of<CurrentUserModel>;
 
-  String convoId = '';  
+  String convoId = '';
 
-  
   bool _isHomeForm = true;
 
-    Future<String> getConversation(currentUserId) async {
-      //print(currentUserId);
-    var response =
-        await http.get(Uri.parse(url + "students/"+ currentUserId.toString() +"/conversations"), headers: headers());
+  Future<String> getConversation(currentUserId) async {
+    //print(currentUserId);
+    var response = await http.get(
+        Uri.parse(
+            url + "students/" + currentUserId.toString() + "/conversations"),
+        headers: headers());
 
     setState(() {
       var extractdata = json.decode(response.body);
@@ -50,9 +51,8 @@ class _HomeViewState extends State<HomeView> {
     //print(dataConversation);
     return dataConversation[0]['id'].toString();
   }
-  
 
-  @override  
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -109,7 +109,19 @@ class _HomeViewState extends State<HomeView> {
                     ],
                   ),
                 ),
-                Icon(Icons.settings, color: AppColors.APPBAR_TEXT),
+                Consumer<CurrentUserModel>(
+                  builder: (context, currentUserModel, child) {
+                  return GestureDetector(
+                    onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ConfigView(currentUserModel.myCurrentUser.id)),
+                        );
+                      },
+                      child: Icon(Icons.settings, color: AppColors.APPBAR_TEXT));
+  },
+  ),
               ],
             ),
           ),
@@ -126,72 +138,76 @@ class _HomeViewState extends State<HomeView> {
           Container(
               padding: EdgeInsets.only(
                   top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 10),
-              child: Column( children: <Widget>[ CustomButton(
-                  isWhiteButton: true,
-                  text: "CHAT",
-                  tap: () async {
-                    final currentUser = Provider.of<CurrentUserModel>(context,listen: false);     
-                    convoId = await getConversation(currentUser.myCurrentUser.id);
-                    if (convoId != '' || convoId != ' ' || convoId != null) {
-                    Navigator.push(                        
-                      context,
-                      MaterialPageRoute(builder: (context) => ChatView(convoId)),
-                    ); }
-                  }),
-                   SizedBox(
+              child: Column(children: <Widget>[
+                CustomButton(
+                    isWhiteButton: true,
+                    text: "CHAT",
+                    tap: () async {
+                      final currentUser =
+                          Provider.of<CurrentUserModel>(context, listen: false);
+                      convoId =
+                          await getConversation(currentUser.myCurrentUser.id);
+                      if (convoId != '' || convoId != ' ' || convoId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatView(convoId)),
+                        );
+                      }
+                    }),
+                SizedBox(
                   height: 13,
-                 ),
-                  CustomButtonSmall(
-                  margin: EdgeInsets.symmetric(horizontal:15, vertical:2),
-                  isWhiteButton: true,
-                  hasNotification: false,
-                  text: "RESULTADOS",
-                  tap: () {
-                    final currentUser = Provider.of<CurrentUserModel>(context,listen: false);     
-                    getConversation(currentUser.myCurrentUser.id);
-                    Navigator.push(
-                        
-                      context,
-                      MaterialPageRoute(builder: (context) => ResultsView()),
-                    );
-                  }),
-                   SizedBox(
-                  height: 4,
-                 ),
-                  CustomButtonSmall(
+                ),
+                CustomButtonSmall(
+                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    isWhiteButton: true,
                     hasNotification: false,
-                  margin: EdgeInsets.symmetric(horizontal:15, vertical:2),
-                  isWhiteButton: true,
-                  text: "BITACORA",
-                  tap: () {
-                    final currentUser = Provider.of<CurrentUserModel>(context,listen: false);     
-                    getConversation(currentUser.myCurrentUser.id);
-                    Navigator.push(
-                        
-                      context,
-                      MaterialPageRoute(builder: (context) => BitacoraView()),
-                    );
-                  }),
-                  SizedBox(
+                    text: "RESULTADOS",
+                    tap: () {
+                      final currentUser =
+                          Provider.of<CurrentUserModel>(context, listen: false);
+                      getConversation(currentUser.myCurrentUser.id);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ResultsView()),
+                      );
+                    }),
+                SizedBox(
                   height: 4,
-                 ),
-                  CustomButtonSmall(
+                ),
+                CustomButtonSmall(
+                    hasNotification: false,
+                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    isWhiteButton: true,
+                    text: "BITACORA",
+                    tap: () {
+                      final currentUser =
+                          Provider.of<CurrentUserModel>(context, listen: false);
+                      getConversation(currentUser.myCurrentUser.id);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => BitacoraView()),
+                      );
+                    }),
+                SizedBox(
+                  height: 4,
+                ),
+                CustomButtonSmall(
                     hasNotification: true,
-                  margin: EdgeInsets.symmetric(horizontal:15, vertical:2),
-                  isWhiteButton: true,
-                  text: "CITAS",
-                  tap: () {
-                    final currentUser = Provider.of<CurrentUserModel>(context,listen: false);     
-                    getConversation(currentUser.myCurrentUser.id);
-                    Navigator.push(
-                        
-                      context,
-                      MaterialPageRoute(builder: (context) => AppointmentView()),
-                    );
-                  }),
-
-        ])),
-                 
+                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    isWhiteButton: true,
+                    text: "CITAS",
+                    tap: () {
+                      final currentUser =
+                          Provider.of<CurrentUserModel>(context, listen: false);
+                      getConversation(currentUser.myCurrentUser.id);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AppointmentView()),
+                      );
+                    }),
+              ])),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
