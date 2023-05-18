@@ -22,6 +22,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class AppointmentView extends StatefulWidget {
+   final int userId;
+    AppointmentView(this.userId);
+
   @override
   _AppointmentViewState createState() => _AppointmentViewState();
 }
@@ -34,25 +37,25 @@ class _AppointmentViewState extends State<AppointmentView> {
 
   final _controller = ScrollController();
   int score = 0;
-  List dataRecs = [];
+  List dataAppoints = [];
 
   List<Appointment> appointments = [];
   bool _isLoading = true;
 
-  Future<String> getRecs() async {
+  Future<String> getAppoints() async {
     _isLoading = true;
 
     var responseRecs = await http
-        .get(Uri.parse(url + "students/1/appointments"), headers: headers());
+        .get(Uri.parse(url + "students/"+ widget.userId.toString() +"/appointments"), headers: headers());
 
     setState(() {
       var extractdataBitacora =
           json.decode(utf8.decode(responseRecs.bodyBytes));
 
-      dataRecs = extractdataBitacora['content'];
-      print(dataRecs);
+      dataAppoints = extractdataBitacora['content'];
+      print(dataAppoints);
 
-      for (var info in dataRecs) {
+      for (var info in dataAppoints) {
         appointments.add(Appointment(
             appointmentDate: DateTime.parse(info['appointmentDate']),
             appointmentTime: info['appointmentTime'],
@@ -69,7 +72,7 @@ class _AppointmentViewState extends State<AppointmentView> {
   @override
   void initState() {
     super.initState();
-    getRecs();
+    getAppoints();
   }
 
   @override

@@ -15,9 +15,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class ChatView extends StatefulWidget {
-
+  final String userId;
   final String convoId;
-  ChatView(this.convoId);
+  ChatView(this.convoId, this.userId);
 
   @override
   _ChatViewState createState() => _ChatViewState(convoId);
@@ -91,11 +91,11 @@ class _ChatViewState extends State<ChatView> {
             if (obj.message == 'Gracias por responder las preguntas. Tu puntaje es:'){
 
               var responseResults = await http.get(
-                  Uri.parse(url + "students/1/results"),
+                  Uri.parse("${url}students/${widget.userId}/results"),
                   headers: headers());    
 
                 var extractdataResults = json.decode(responseResults.body);
-                var scored = extractdataResults['content'].last['score'] - extractdataResults['content'][extractdataResults['content'].length - 2]['score'];
+                var scored = extractdataResults.last['score'] - extractdataResults[extractdataResults.length - 2]['score'];
 
                 setState(() {
                     obj.message = 'Gracias por responder las preguntas. Tu puntaje es: ${scored}.';
@@ -128,8 +128,9 @@ class _ChatViewState extends State<ChatView> {
 
 
         });
-         _isLoading = false;
-
+         
+       _isLoading = false;
+                
           
         return messages.toString();
   }

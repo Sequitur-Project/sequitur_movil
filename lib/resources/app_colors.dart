@@ -11,6 +11,8 @@ class AppColors {
   static const Color APPBAR_TEXT = Color.fromARGB(255, 255, 255, 255);
 
   static const Color MESSAGE_STUDENT_COLOR = Color.fromARGB(255, 39, 168, 121);
+  static const Color ERROR_MESSAGE_COLOR = Color.fromARGB(255, 199, 59, 54);
+
   static const Color MESSAGE_BOT_COLOR = Color.fromARGB(255, 220, 240, 240);
 
   static const Color WHITE = Color.fromARGB(255, 255, 255, 255);

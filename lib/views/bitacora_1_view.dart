@@ -18,6 +18,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class Bitacora1View extends StatefulWidget {
+  
   @override
   _Bitacora1ViewState createState() => _Bitacora1ViewState();
 }

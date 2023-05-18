@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:sequitur_movil/components/custom_button_small.dart';
+import 'package:sequitur_movil/models/appointment_model.dart';
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/models/user_model.dart';
 
@@ -22,6 +23,10 @@ import 'package:sequitur_movil/views/config_view.dart';
 import 'package:sequitur_movil/views/results_view.dart';
 
 class HomeView extends StatefulWidget {
+  final int userId;
+
+  HomeView(this.userId);
+
   @override
   _HomeViewState createState() => _HomeViewState();
 }
@@ -33,9 +38,16 @@ class _HomeViewState extends State<HomeView> {
   final _passwordController = TextEditingController();
   final currentUser = Provider.of<CurrentUserModel>;
 
+  List dataAppoints = [];
+  int numberAppoints = 0;
+
+  List<Appointment> appointments = [];
+
   String convoId = '';
 
   bool _isHomeForm = true;
+  bool _isLoading = true;
+
 
   Future<String> getConversation(currentUserId) async {
     //print(currentUserId);
@@ -50,6 +62,41 @@ class _HomeViewState extends State<HomeView> {
     });
     //print(dataConversation);
     return dataConversation[0]['id'].toString();
+  }
+
+  
+  Future<String> getAppoints() async {
+    numberAppoints = 0;
+    var responseRecs = await http
+        .get(Uri.parse(url + "students/"+ widget.userId.toString() +"/appointments"), headers: headers());
+
+    setState(() {
+      var extractdataBitacora =
+          json.decode(utf8.decode(responseRecs.bodyBytes));
+
+      dataAppoints = extractdataBitacora['content'];
+      print(dataAppoints);
+
+      for (var info in dataAppoints) {
+        if (info['accepted'] == false){
+            numberAppoints = numberAppoints + 1;
+        }
+
+        appointments.add(Appointment(
+            appointmentDate: DateTime.parse(info['appointmentDate']),
+            appointmentTime: info['appointmentTime'],
+            appointmentLocation: info['appointmentLocation'],
+            reason: info['reason'],
+            accepted: info['accepted']));
+      }
+    });
+    return responseRecs.body.toString();
+    }
+
+     @override
+  void initState() {
+    super.initState();
+    getAppoints();
   }
 
   @override
@@ -134,101 +181,107 @@ class _HomeViewState extends State<HomeView> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Stack(children: <Widget>[
-          Container(
-              padding: EdgeInsets.only(
-                  top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 10),
-              child: Column(children: <Widget>[
-                CustomButton(
-                    isWhiteButton: true,
-                    text: "CHAT",
-                    tap: () async {
-                      final currentUser =
-                          Provider.of<CurrentUserModel>(context, listen: false);
-                      convoId =
-                          await getConversation(currentUser.myCurrentUser.id);
-                      if (convoId != '' || convoId != ' ' || convoId != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatView(convoId)),
-                        );
-                      }
-                    }),
-                SizedBox(
-                  height: 13,
-                ),
-                CustomButtonSmall(
-                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    isWhiteButton: true,
-                    hasNotification: false,
-                    text: "RESULTADOS",
-                    tap: () {
-                      final currentUser =
-                          Provider.of<CurrentUserModel>(context, listen: false);
-                      getConversation(currentUser.myCurrentUser.id);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ResultsView()),
-                      );
-                    }),
-                SizedBox(
-                  height: 4,
-                ),
-                CustomButtonSmall(
-                    hasNotification: false,
-                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    isWhiteButton: true,
-                    text: "BITACORA",
-                    tap: () {
-                      final currentUser =
-                          Provider.of<CurrentUserModel>(context, listen: false);
-                      getConversation(currentUser.myCurrentUser.id);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BitacoraView()),
-                      );
-                    }),
-                SizedBox(
-                  height: 4,
-                ),
-                CustomButtonSmall(
-                    hasNotification: true,
-                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    isWhiteButton: true,
-                    text: "CITAS",
-                    tap: () {
-                      final currentUser =
-                          Provider.of<CurrentUserModel>(context, listen: false);
-                      getConversation(currentUser.myCurrentUser.id);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AppointmentView()),
-                      );
-                    }),
-              ])),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-              margin: EdgeInsets.all(20),
-              height: 60,
-              width: double.infinity,
-              child: Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: 15,
+        child: Consumer<CurrentUserModel>(
+          builder: (context, currentUserModel, child) {
+            return Stack(children: <Widget>[
+              Container(
+                  padding: EdgeInsets.only(
+                      top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 10),
+                  child: Column(children: <Widget>[
+                    CustomButton(
+                        isWhiteButton: true,
+                        text: "CHAT",
+                        tap: () async {
+                          final currentUser =
+                              Provider.of<CurrentUserModel>(context, listen: false);
+                          convoId =
+                              await getConversation(currentUser.myCurrentUser.id);
+                          if (convoId != '' || convoId != ' ' || convoId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ChatView(convoId,currentUserModel.myCurrentUser.id.toString())),
+                            );
+                          }
+                        }),
+                    SizedBox(
+                      height: 13,
+                    ),
+                    CustomButtonSmall(
+                        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                        isWhiteButton: true,
+                        hasNotification: false,
+                        text: "RESULTADOS",
+                        tap: () {
+                          final currentUser =
+                              Provider.of<CurrentUserModel>(context, listen: false);
+                          getConversation(currentUser.myCurrentUser.id);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ResultsView(currentUserModel.myCurrentUser.id)),
+                          );
+                        }),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    CustomButtonSmall(
+                        hasNotification: false,
+                        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                        isWhiteButton: true,
+                        text: "BITACORA",
+                        tap: () {
+                          final currentUser =
+                              Provider.of<CurrentUserModel>(context, listen: false);
+                          getConversation(currentUser.myCurrentUser.id);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => BitacoraView(currentUserModel.myCurrentUser.id.toString())),
+                          );
+                        }),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    CustomButtonSmall(
+                        hasNotification: true,
+                        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                        isWhiteButton: true,
+                        notificationNumber: numberAppoints,
+                        text: "CITAS",
+                        tap: () {
+                          final currentUser =
+                              Provider.of<CurrentUserModel>(context, listen: false);
+                          getConversation(currentUser.myCurrentUser.id);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AppointmentView(currentUser.myCurrentUser.id)),
+                          );
+                        }),
+                  ])),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                  margin: EdgeInsets.all(20),
+                  height: 60,
+                  width: double.infinity,
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 15,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ]) /* add child content here */,
+            ]);
+          }
+        ) /* add child content here */,
       ),
     );
   }
 }
+

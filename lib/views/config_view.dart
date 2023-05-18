@@ -7,6 +7,7 @@ import 'package:sequitur_movil/models/bitacora_entry_model.dart';
 import 'package:sequitur_movil/models/user_model.dart';
 import 'package:sequitur_movil/views/bitacora_1_view.dart';
 import 'package:sequitur_movil/views/home_view.dart';
+import 'package:sequitur_movil/views/profile_view.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:sequitur_movil/components/custom_button.dart';
 import 'package:sequitur_movil/components/custom_text_field.dart';
@@ -43,7 +44,10 @@ class _ConfigViewState extends State<ConfigView> {
       lastName: '',
       email: '',
       telephone: '',
-      universityId: 0);
+      universityId: 0,
+      gender: '',
+      password: '',
+      );
   bool _isLoading = true;
 
   Future<String> getUser() async {
@@ -60,7 +64,9 @@ class _ConfigViewState extends State<ConfigView> {
           lastName: extractdata['lastName'],
           email: extractdata['email'],
           telephone: extractdata['telephone'],
-          universityId: extractdata['universityId']);
+          universityId: extractdata['universityId'],
+          gender: extractdata['genre'],
+          birthday: DateTime.parse(extractdata['birthDate']));
     });
     print(currentUseri.firstName);
     _isLoading = false;
@@ -92,7 +98,7 @@ class _ConfigViewState extends State<ConfigView> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeView()),
+                        MaterialPageRoute(builder: (context) => HomeView(widget.userId)),
                       );
                     },
                     icon: Icon(
@@ -160,35 +166,114 @@ class _ConfigViewState extends State<ConfigView> {
               : Container(
                   alignment: Alignment.topCenter,
                   margin: EdgeInsets.only(
-                      top: AppDimensions.APPBAR_HEIGHT + 20, bottom: 0),
-                  child: GestureDetector(
+                      top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 0),
+                  child: Column(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              padding: EdgeInsets.all(25),
+                              alignment: Alignment.topCenter,
+                              color: Colors.white,
+                              child: Row(
+                                children: [
+                                  Icon(Icons.person, color: AppColors.BUTTON_COLOR),
+                                  SizedBox(
+                                    width: 13,
+                                  ),
+                                  Text('CUENTA',
+                                  style:
+                                  TextStyle(
+                                  color: AppColors.TEXT_COLOR_GRAY, letterSpacing: 1),),
+                                ],
+                              )),
+                           GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      SlidePageRoute(page: ProfileView(currentUseri)),
+                                    );                              
+                            },
+                             child: Container(
+                                padding: EdgeInsets.only(top:0,bottom:25,left:25,right:25),
+                                alignment: Alignment.topCenter,
+                                color: Colors.white,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 38,
+                                    ),
+                                    Text('Ver información personal',
+                                    style:
+                                    TextStyle(
+                                    color: AppColors.TEXT_COLOR_GRAY, letterSpacing: 1),),
+                                    Expanded(
+                                      child: SizedBox(),
+                                    ),
+                                    Icon(Icons.keyboard_arrow_right_outlined, color: AppColors.BUTTON_COLOR),
+                           
+                                  ],
+                                )),
+                           ),   
+                        ],
+                      ),
+                      GestureDetector(
 
-                    onTap: () {
-                        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                      },                    
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            padding: EdgeInsets.all(25),
-                            alignment: Alignment.topCenter,
-                            color: Colors.white,
-                            child: Row(
-                              children: [
-                                Icon(Icons.logout, color: AppColors.BUTTON_COLOR),
-                                SizedBox(
-                                  width: 13,
-                                ),
-                                Text('CERRAR SESIÓN',
-                                style:
-                                TextStyle(
-                                color: AppColors.TEXT_COLOR_GRAY, letterSpacing: 1),),
-                              ],
-                            )),
-                      ],
-                    ),
+                        onTap: () {
+                            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                          },                    
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height:4
+                            ),
+                            Container(
+                                padding: EdgeInsets.all(25),
+                                alignment: Alignment.topCenter,
+                                color: Colors.white,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.logout, color: AppColors.BUTTON_COLOR),
+                                    SizedBox(
+                                      width: 13,
+                                    ),
+                                    Text('CERRAR SESIÓN',
+                                    style:
+                                    TextStyle(
+                                    color: AppColors.TEXT_COLOR_GRAY, letterSpacing: 1),),
+                                  ],
+                                )),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 )),
     );
   }
+}
+
+
+class SlidePageRoute extends PageRouteBuilder {
+  final Widget page;
+
+  SlidePageRoute({required this.page})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            var begin = Offset(1.0, 0.0);
+            var end = Offset.zero;
+            var curve = Curves.ease;
+
+            var tween = Tween(begin: begin, end: end)
+                .chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
 }

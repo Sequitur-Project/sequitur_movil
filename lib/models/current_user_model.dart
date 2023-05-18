@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sequitur_movil/models/user_model.dart';
 
 class CurrentUserModel extends ChangeNotifier {
-  UserModel _myCurrentUser = UserModel(email: '', firstName: '', id: 0, lastName: '', telephone: '', universityId: 0);
+  UserModel _myCurrentUser = UserModel(email: '', firstName: '', id: 0, lastName: '', telephone: '', universityId: 0, gender:'');
 
   UserModel get myCurrentUser => _myCurrentUser;
 

@@ -17,6 +17,9 @@ import 'package:sequitur_movil/endpoints/endpoints.dart';
 import 'package:http/http.dart' as http;
 
 class ResultsView extends StatefulWidget {
+  final int userId;
+  ResultsView(this.userId);
+
   @override
   _ResultsViewState createState() => _ResultsViewState();
 }
@@ -46,12 +49,12 @@ class _ResultsViewState extends State<ResultsView> {
 
   Future<String> getResults() async {
     var responseResults = await http.get(
-        Uri.parse(url + "students/1/results"),
+        Uri.parse("${url}students/${widget.userId}/results"),
         headers: headers());    
 
     setState(() {
       var extractdataResults = json.decode(responseResults.body);
-      dataResults = extractdataResults['content'];
+      dataResults = extractdataResults;
       score = dataResults.last['score'] - dataResults[dataResults.length - 2]['score'];
       print(dataResults.last);
     });
@@ -62,7 +65,7 @@ class _ResultsViewState extends State<ResultsView> {
 
   Future<String> getRecs() async {
     var responseRecs = await http.get(
-        Uri.parse(url + "students/1/recommendations"),
+        Uri.parse("${url}students/${widget.userId}/recommendations"),
         headers: headers());
 
     setState(() {
@@ -252,7 +255,7 @@ class _ResultsViewState extends State<ResultsView> {
                         setState(() {
                              Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => RecsView()),
+                            MaterialPageRoute(builder: (context) => RecsView(widget.userId)),
                           );
                         });                        
                       })),

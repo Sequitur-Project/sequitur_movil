@@ -7,6 +7,7 @@ import 'package:sequitur_movil/views/login_view.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 
+
 void main() async {
   await initializeDateFormatting('es_ES', null);
 
@@ -30,3 +31,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

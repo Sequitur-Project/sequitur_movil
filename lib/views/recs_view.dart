@@ -21,6 +21,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class RecsView extends StatefulWidget {
+ final int userId;
+ RecsView(this.userId);
+
   @override
   _RecsViewState createState() => _RecsViewState();
 }
@@ -42,7 +45,7 @@ class _RecsViewState extends State<RecsView> {
     _isLoading = true;
 
     var responseRecs = await http.get(
-        Uri.parse(url + "students/1/recommendations"),
+        Uri.parse("${url}students/${widget.userId}/recommendations"),
         headers: headers());
 
     setState(() {

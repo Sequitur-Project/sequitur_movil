@@ -21,6 +21,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class BitacoraView extends StatefulWidget {
+  final String userId;
+  BitacoraView(this.userId);
+
   @override
   _BitacoraViewState createState() => _BitacoraViewState();
 }
@@ -35,8 +38,9 @@ class _BitacoraViewState extends State<BitacoraView> {
   int score = 0;
   List dataEmojis = [];
 
-  final DateTime startDate = DateTime(2023, 5, 1);
-  final DateTime endDate = DateTime(2023, 5, 7);
+  DateTime startDate = DateTime(2023, 5, 1);
+  DateTime endDate = DateTime(2023, 5, 7);
+  DateTime currentDate = DateTime.now();
 
   final List<Map<String, dynamic>> _emojiData = [
     {'text': 'Miedo', 'image': 'assets/images/miedo.png'},
@@ -54,7 +58,7 @@ class _BitacoraViewState extends State<BitacoraView> {
     _isLoading = true;
 
     var responseResults = await http.get(
-        Uri.parse(url + "binnacles/1/binnacleEntries"),
+        Uri.parse(url + "binnacles/"+ widget.userId+"/binnacleEntries"),
         headers: headers());
 
     setState(() {
@@ -69,6 +73,18 @@ class _BitacoraViewState extends State<BitacoraView> {
             feeling: info['feeling'],
             reason: info['reason']));
       }
+
+      if (entries.isNotEmpty) {
+          entries.sort((b, a) => b.createdAt.compareTo(a.createdAt));  
+          startDate = entries.first.createdAt;
+          endDate = currentDate.add(Duration(days: 2));  
+      } else {
+        startDate = currentDate.add(Duration(days: -2));  
+        endDate = currentDate.add(Duration(days: 2));  
+      }
+
+      
+
     });
 
     _isLoading = false;
@@ -108,7 +124,7 @@ class _BitacoraViewState extends State<BitacoraView> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => HomeView()),
+                            MaterialPageRoute(builder: (context) => HomeView(1)),
                           );
                         },
                         icon: Icon(

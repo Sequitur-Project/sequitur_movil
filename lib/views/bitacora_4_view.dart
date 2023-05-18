@@ -225,29 +225,33 @@ List<Widget> _buildRadioButtons() {
                   ),
                 
                 )),
-                Align(
-                    alignment: Alignment.bottomCenter,
-                    child: BottomButton(
-                        isWhiteButton: false,
-                        text: "REGISTRAR",
-                        tap: () async {
+                 Consumer<CurrentUserModel>(
+                        builder: (context, currentUserModel, child) {
+                    return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: BottomButton(
+                            isWhiteButton: false,
+                            text: "REGISTRAR",
+                            tap: () async {
 
-                              newEntry = {
-                                  'emoji': emoji,
-                                  'feeling': feeling,
-                                  'reason': reason,
-                                  'extraText': _extraController.text.toString()                             
-                              };                          
-                              var body = json.encode(newEntry);  
-                              http.Response response = await http.post(Uri.parse(url + "binnacles/1/binnacleEntries"), headers: headers(), body: body);
+                                  newEntry = {
+                                      'emoji': emoji,
+                                      'feeling': feeling,
+                                      'reason': reason,
+                                      'extraText': _extraController.text.toString()                             
+                                  };                          
+                                  var body = json.encode(newEntry);  
+                                  http.Response response = await http.post(Uri.parse(url + "binnacles/"+ currentUserModel.myCurrentUser.id.toString() +"/binnacleEntries"), headers: headers(), body: body);
 
-                                Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => BitacoraView()),
-                                );  
+                                    Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => BitacoraView(currentUserModel.myCurrentUser.id.toString())),
+                                    );  
 
-                        })
-                    ),
+                            })
+                        );
+                  }
+                ),
               ],
             ),
          

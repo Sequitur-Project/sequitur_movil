@@ -14,6 +14,7 @@ import 'package:sequitur_movil/models/user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/views/home_view.dart';
 import 'package:http/http.dart' as http;
+import 'package:sequitur_movil/views/register_view.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -25,6 +26,15 @@ class _LoginViewState extends State<LoginView> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  var userId;
+
+  String? _emailError;
+  String? _passwordError;
+
+  bool hasEmailError = false;
+  bool hasPasswordError = false;
+
   List<UniversityModel> myItems = [];
   List dataUsers = [];
   bool userExists = false;
@@ -36,6 +46,7 @@ class _LoginViewState extends State<LoginView> {
       id: 0,
       lastName: '',
       telephone: '',
+      gender: '',
       universityId: 0);
 
   bool _isLoginForm = true;
@@ -59,123 +70,12 @@ class _LoginViewState extends State<LoginView> {
         adress: 'adress1',
         zipCode: 'zipCode1',
         ruc: 'ruc1'));
-    myItems.add(UniversityModel(
-        id: 2,
-        name: 'name2',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 3,
-        name: 'name3',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 4,
-        name: 'name4',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 5,
-        name: 'name5',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 6,
-        name: 'name6',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 7,
-        name: 'name7',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 8,
-        name: 'name8',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 9,
-        name: 'name9',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 10,
-        name: 'name10',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 11,
-        name: 'name11',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 12,
-        name: 'name12',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 13,
-        name: 'name13',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 14,
-        name: 'name14',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 15,
-        name: 'name15',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 16,
-        name: 'name16',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));myItems.add(UniversityModel(
-        id: 17,
-        name: 'name17',
-        country: 'country2',
-        city: 'city2',
-        adress: 'adress2',
-        zipCode: 'zipCode2',
-        ruc: 'ruc2'));
 
     //print(dataUsers);
     return response.body.toString();
   }
+
+  void validate() {}
 
   @override
   Widget build(BuildContext context) {
@@ -187,13 +87,208 @@ class _LoginViewState extends State<LoginView> {
               fit: BoxFit.cover,
             ),
           ),
-          child: null /* add child content here */,
+          child: Container(
+            padding: EdgeInsets.only(top:20),
+            child: Center(
+                              child: Image.asset(
+                                ('assets/images/IMAGOTIPO.png'),
+                                fit: BoxFit.cover,
+                                width: 288/1.5,
+                                height: 180/1.5,
+                              ),
+                            ),
+          ), /* add child content here */
         ),
         bottomNavigationBar: BottomButton(
             isWhiteButton: true,
             text: "INICIAR SESIÓN",
             tap: () {
-              showMenu();
+              showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return StatefulBuilder(builder:
+                        (BuildContext context, StateSetter setModalState) {
+                      return ChangeNotifierProvider(
+                          create: (_) => CurrentUserModel(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height *
+                                0.8, // 80% of screen height
+                            child: Column(
+                              children: [
+                                // Top text widget
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TitleDesc(
+                                              title: 'INICIAR SESIÓN',
+                                              description:
+                                                  'Inicia sesión utilizando tu correo institucional.'),
+                                          CustomTextField(
+                                              icon: Icons.email,
+                                              controller: _emailController,
+                                              labelText: 'CORREO INSTITUCIONAL',
+                                              error: _emailError,
+                                              labelHint:
+                                                  'ejemplo@correo.edu.pe'),
+                                          CustomTextField(
+                                            icon: Icons.lock,
+                                            controller: _passwordController,
+                                            labelText: 'CONTRASEÑA',
+                                            labelHint: 'contraseña',
+                                            isPassword: true,
+                                            error: _passwordError,
+                                          ),
+                                        ]),
+                                  ),
+                                ),
+                                // Bottom text widget
+                                Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: BottomButton(
+                                        isWhiteButton: true,
+                                        text: "NO TENGO CUENTA",
+                                        tap: () {
+                                          Navigator.push(
+                                            context,
+                                            FadePageRoute(
+                                                builder: (context) =>
+                                                    RegisterView()),
+                                          );
+                                        })),
+
+                                Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: BottomButton(
+                                        isWhiteButton: false,
+                                        text: "INICIAR SESIÓN",
+                                        tap: () {
+                                          getUser();
+                                          userInfo = UserModel(
+                                          email: '',
+                                          password: '',
+                                          firstName: '',
+                                          id: 0,
+                                          lastName: '',
+                                          telephone: '',
+                                          gender: '',
+                                          universityId: 0);
+                                          final RegExp emailRegex = RegExp(
+                                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+                                          setModalState(() {
+                                            _emailError = null;
+                                          });
+
+                                          if (_passwordController
+                                                  .text.isNotEmpty) {
+                                              } else {
+                                                setModalState(() {
+                                                   passValid = false;
+                                                  _passwordError =
+                                                      'Ingrese su contraseña.';
+                                                });
+                                              }
+
+                                          if (_emailController.text == '') {
+                                            userValid = false;
+                                            setModalState(() {
+                                              _emailError =
+                                                  'Ingrese su correo institucional.';
+                                            });
+                                          } else if (emailRegex.hasMatch(
+                                              _emailController.text
+                                                  .toString())) {
+                                            setModalState(() {
+                                              _emailError = null;
+                                            });
+
+                                            for (var cosa in dataUsers) {
+                                              if (cosa['email'] ==
+                                                  _emailController.text) {
+                                                userExists = true;
+                                                userInfo = UserModel(
+                                                    id: cosa['id'],
+                                                    password: cosa['password'],
+                                                    firstName:
+                                                        cosa['firstName'],
+                                                    lastName: cosa['lastName'],
+                                                    email: cosa['email'],
+                                                    telephone:
+                                                        cosa['telephone'],
+                                                    gender: cosa['genre'],
+                                                    universityId:
+                                                        cosa['universityId']);
+                                                userId = cosa['id'];
+                                              }                                             
+
+                                            }
+                                            setModalState(() {
+                                              if (userExists) {
+                                                userValid = true;
+                                                setModalState(() {
+                                                  _emailError = null;
+                                                });
+                                              } else {
+                                                userValid = false;
+                                                setModalState(() {
+                                                  _emailError =
+                                                      'Correo no registrado.';
+                                                });
+                                              }                                              
+
+                                              if (_passwordController
+                                                      .text.isNotEmpty &&
+                                                  userValid) {
+                                                if (userInfo.password ==
+                                                    _passwordController.text) {
+                                                  passValid = true;
+                                                  setModalState(() {
+                                                    _passwordError = null;
+                                                  });
+                                                } else {
+                                                  passValid = false;
+                                                  setModalState(() {
+                                                    _passwordError =
+                                                        'Contraseña incorrecta.';
+                                                  });
+                                                }
+                                              } else {
+                                                setModalState(() {
+                                                  _passwordError =
+                                                      'Ingrese su contraseña.';
+                                                });
+                                              }
+                                            });
+                                            if (userValid && passValid) {
+                                              final currentUser =
+                                                  Provider.of<CurrentUserModel>(
+                                                      context,
+                                                      listen: false);
+                                              currentUser.setMyValue(userInfo);
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HomeView(userInfo.id)),
+                                              );
+                                            }
+                                          } else {
+                                            setModalState(() {
+                                              _emailError =
+                                                  'Formato de correo no valido.';
+                                            });
+                                          }
+                                        })),
+                              ],
+                            ),
+                          ));
+                    });
+                  });
             }));
   }
 
@@ -202,255 +297,18 @@ class _LoginViewState extends State<LoginView> {
     super.initState();
     getUser();
   }
+}
 
-  showMenu() {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return _isLoginForm ? buildLoginForm() : buildRegisterForm();
-          });
-        });
-  }
+class FadePageRoute<T> extends MaterialPageRoute<T> {
+  FadePageRoute({required WidgetBuilder builder, RouteSettings? settings})
+      : super(builder: builder, settings: settings);
 
-  Widget buildLoginForm() {
-    var userId;
-    return ChangeNotifierProvider(
-        create: (_) => CurrentUserModel(),
-        child: Container(
-          height:
-              MediaQuery.of(context).size.height * 0.8, // 80% of screen height
-          child: Column(
-            children: [
-              // Top text widget
-              Expanded(
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TitleDesc(
-                            title: 'INICIAR SESIÓN',
-                            description:
-                                'Inicia sesión utilizando tu correo institucional.'),
-                        CustomTextField(
-                            icon: Icons.email,
-                            controller: _emailController,
-                            labelText: 'CORREO INSTITUCIONAL',
-                            labelHint: 'ejemplo@correo.edu.pe'),
-                        CustomTextField(
-                          icon: Icons.lock,
-                          controller: _passwordController,
-                          labelText: 'CONTRASEÑA',
-                          labelHint: 'contraseña',
-                          isPassword: true,
-                        ),
-                        Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 15),
-                            child: GestureDetector(
-                              child: Text(
-                                "Olvidé mi contraseña",
-                                style: TextStyle(
-                                    decoration: TextDecoration.none,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.TEXT_COLOR_GRAY,
-                                    fontSize: 12,
-                                    letterSpacing: 1),
-                                textAlign: TextAlign.left,
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginView()),
-                                );
-                              },
-                            ))
-                      ]),
-                ),
-              ),
-              // Bottom text widget
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: BottomButton(
-                      isWhiteButton: true,
-                      text: "NO TENGO CUENTA",
-                      tap: () {
-                        setState(() {
-                          _isLoginForm = !_isLoginForm;
-                        });
-                      })),
-
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: BottomButton(
-                      isWhiteButton: false,
-                      text: "INICIAR SESIÓN",
-                      tap: () {
-                        for (var cosa in dataUsers) {
-                          if (cosa['email'] == _emailController.text) {
-                            userExists = true;
-                            userInfo = UserModel(
-                                id: cosa['id'],
-                                firstName: cosa['firstName'],
-                                lastName: cosa['lastName'],
-                                email: cosa['email'],
-                                telephone: cosa['telephone'],
-                                universityId: cosa['universityId']);
-                            userId = cosa['id'];
-                          }
-                        }
-                        setState(() {
-                          userExists ? userValid = true : userValid = false;
-                          _passwordController.text.isNotEmpty
-                              ? passValid = true
-                              : passValid = false;
-                        });
-                        if (userValid && passValid) {
-                          final currentUser = Provider.of<CurrentUserModel>(
-                              context,
-                              listen: false);
-                          currentUser.setMyValue(userInfo);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomeView()),
-                          );
-                        }
-                      })),
-            ],
-          ),
-        ));
-  }
-
-  Widget buildRegisterForm() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8, // 80% of screen height
-      child: Column(
-        children: [
-          // Top text widget
-          Expanded(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: SingleChildScrollView(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TitleDesc(
-                          title: 'REGISTRAR',
-                          description: 'Completa tus datos personales.'),
-                      CustomTextField(
-                          icon: Icons.email,
-                          controller: _emailController,
-                          labelText: 'NOMBRES',
-                          labelHint: 'Ex. Akira'),
-                      CustomTextField(
-                          icon: Icons.lock,
-                          controller: _passwordController,
-                          labelText: 'APELLIDOS',
-                          labelHint: 'Ex. Nishikiyama'),
-                      CustomTextField(
-                          icon: Icons.email,
-                          controller: _emailController,
-                          labelText: 'TELEPHONE',
-                          labelHint: 'Ex. 945871154'),
-                      CustomTextField(
-                        icon: Icons.email,
-                        controller: _emailController,
-                        labelText: 'CONTRASEÑA',
-                        labelHint: 'contraseña',
-                        isPassword: true,
-                      ),
-                      CustomTextField(
-                        icon: Icons.email,
-                        controller: _emailController,
-                        labelText: 'CONFIRMAR CONTRASEÑA',
-                        labelHint: 'contraseña',
-                        tap: () {
-                          showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return SimpleDialog(
-              children: myItems
-                  .map(
-                    (option) => ListTile(
-                      title: Text(option.name),
-                      onTap: () {
-                        setState(() {
-                          _selectedOption = option.id;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                  )
-                  .toList(),
-            );
-          },
-        );
-
-                        }
-                      ),
-                      // CustomDropdownWidget<UniversityModel>(
-                      //   items: myItems,
-                      //   hintText: 'Select an item',
-                      //   onChanged: (value) {
-                      //     // Do something with the selected item
-                      //   },
-                      //   displayTextBuilder: (item) => item.name,
-                      // ),
-                      Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 15),
-                          child: GestureDetector(
-                            child: Text(
-                              "Olvidé mi contraseña",
-                              style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.TEXT_COLOR_GRAY,
-                                  fontSize: 12,
-                                  letterSpacing: 1),
-                              textAlign: TextAlign.left,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginView()),
-                              );
-                            },
-                          ))
-                    ]),
-              ),
-            ),
-          ),
-          // Bottom text widget
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomButton(
-                  isWhiteButton: true,
-                  text: "YA TENGO CUENTA",
-                  tap: () {
-                    setState(() {
-                      _isLoginForm = !_isLoginForm;
-                    });
-                  })),
-
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomButton(
-                  isWhiteButton: false,
-                  text: "CONTINUAR",
-                  tap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginView()),
-                    );
-                  })),
-        ],
-      ),
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return FadeTransition(
+      opacity: animation,
+      child: child,
     );
   }
 }

@@ -9,6 +9,7 @@ class CustomButtonSmall extends StatelessWidget {
       required this.text,
       required this.isWhiteButton,  
       required this.hasNotification,  
+      this.notificationNumber,
       this.fontWeight,
       this.padding,
       this.margin,          
@@ -19,6 +20,7 @@ class CustomButtonSmall extends StatelessWidget {
   final String text;
   final bool isWhiteButton;
   final bool hasNotification;
+  final int? notificationNumber;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final FontWeight? fontWeight;
@@ -27,6 +29,11 @@ class CustomButtonSmall extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool _hasNotif = hasNotification;
+    if (notificationNumber == 0|| notificationNumber == null) {
+        _hasNotif = false;
+    }
+
     return GestureDetector(
       onTap: tap,
       child: Container(
@@ -39,7 +46,7 @@ class CustomButtonSmall extends StatelessWidget {
           borderRadius: BorderRadius.circular(8.0),
         ),
         alignment: Alignment.center,
-        child: hasNotification ? 
+        child: _hasNotif ? 
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -61,7 +68,7 @@ class CustomButtonSmall extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      "1",
+                      notificationNumber.toString(),
                       style: TextStyle(
                         color: AppColors.BUTTON_TEXT_COLOR,
                         fontSize: 15.0,
