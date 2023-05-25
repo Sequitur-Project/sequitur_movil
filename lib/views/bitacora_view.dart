@@ -41,6 +41,7 @@ class _BitacoraViewState extends State<BitacoraView> {
   DateTime startDate = DateTime(2023, 5, 1);
   DateTime endDate = DateTime(2023, 5, 7);
   DateTime currentDate = DateTime.now();
+  bool _hasEntryToday = false;
 
   final List<Map<String, dynamic>> _emojiData = [
     {'text': 'Miedo', 'image': 'assets/images/miedo.png'},
@@ -72,6 +73,9 @@ class _BitacoraViewState extends State<BitacoraView> {
             emoji: info['emoji'],
             feeling: info['feeling'],
             reason: info['reason']));
+        if ( DateFormat('d/M/y').format(DateTime.parse(info['createdAt'])) == DateFormat('d/M/y').format(DateTime.now())) {
+            _hasEntryToday = true;
+        }     
       }
 
       if (entries.isNotEmpty) {
@@ -80,7 +84,7 @@ class _BitacoraViewState extends State<BitacoraView> {
           endDate = currentDate.add(Duration(days: 2));  
       } else {
         startDate = currentDate.add(Duration(days: -2));  
-        endDate = currentDate.add(Duration(days: 2));  
+        endDate = currentDate.add(Duration(days: 1));  
       }
 
       
@@ -98,11 +102,22 @@ class _BitacoraViewState extends State<BitacoraView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final List<DateTime> dates = List.generate(
+  Widget build(BuildContext context) {    
+    List<DateTime> dates = List.generate(
       endDate.difference(startDate).inDays + 1,
       (index) => startDate.add(Duration(days: index)),
     );
+
+    if (entries.isNotEmpty) {
+      dates = [];
+      for (var entry in entries) {
+        dates.add(entry.createdAt);
+      }
+      if (_hasEntryToday){} else{
+          dates.add(DateTime.now());
+      }      
+      dates.add(DateTime.now().add(Duration(days: 1)));
+    } 
 
     final currentUser = Provider.of<CurrentUserModel>(context);
     return Scaffold(
@@ -324,7 +339,7 @@ class DateRectangle extends StatelessWidget {
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    (isToday ? "HOY" : "") + "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}" ,
+                    (isToday ? "HOY • " : "") + "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}" ,
                     textAlign: TextAlign.left,
                     style:
                         TextStyle(color: AppColors.APPBAR_TEXT, fontSize: 15),

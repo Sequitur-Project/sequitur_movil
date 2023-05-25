@@ -36,6 +36,8 @@ class _Bitacora4ViewState extends State<Bitacora4View> {
   _Bitacora4ViewState(this.emoji, this.feeling, this.reason);
   String url = "https://back-sequitur-production.up.railway.app/api/";
 
+  String bitacoraId = '';
+
   Map newEntry = new Map();
   final _myMessageController = TextEditingController();
 
@@ -241,7 +243,17 @@ List<Widget> _buildRadioButtons() {
                                       'extraText': _extraController.text.toString()                             
                                   };                          
                                   var body = json.encode(newEntry);  
-                                  http.Response response = await http.post(Uri.parse(url + "binnacles/"+ currentUserModel.myCurrentUser.id.toString() +"/binnacleEntries"), headers: headers(), body: body);
+
+                                  var responseResults = await http.get(
+                                    Uri.parse(url + "students/"+  currentUserModel.myCurrentUser.id.toString() +"/binnacles"),
+                                    headers: headers());
+
+                                   setState(() {
+                                      var extractdataBitacora = json.decode(responseResults.body);
+                                      bitacoraId = extractdataBitacora['id'].toString();
+                                  });
+
+                                  http.Response response = await http.post(Uri.parse(url + "binnacles/"+ bitacoraId +"/binnacleEntries"), headers: headers(), body: body);
 
                                     Navigator.push(
                                     context,

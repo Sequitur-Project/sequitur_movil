@@ -23,7 +23,7 @@ class CustomButtonSmall extends StatelessWidget {
   final double height;
   final bool isWhiteButton;
   final bool hasNotification;
-  final int? notificationNumber;
+  final String? notificationNumber;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final FontWeight? fontWeight;
@@ -34,7 +34,7 @@ class CustomButtonSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool _hasNotif = hasNotification;
-    if (notificationNumber == 0|| notificationNumber == null) {
+    if (notificationNumber == '0'|| notificationNumber == null) {
         _hasNotif = false;
     }
 

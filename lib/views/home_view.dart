@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sequitur_movil/components/custom_button_small.dart';
 import 'package:sequitur_movil/models/appointment_model.dart';
+import 'package:sequitur_movil/models/bitacora_entry_model.dart';
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/models/user_model.dart';
 
@@ -14,9 +15,12 @@ import 'package:sequitur_movil/components/title_desc.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
 import 'package:sequitur_movil/views/appointment_view.dart';
+import 'package:sequitur_movil/views/bitacora_1_view.dart';
 import 'package:sequitur_movil/views/bitacora_view.dart';
 import 'package:sequitur_movil/views/chat_view.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
+
+import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:sequitur_movil/views/config_view.dart';
@@ -41,14 +45,22 @@ class _HomeViewState extends State<HomeView> {
   String dataConvoId = '0';
 
   List dataAppoints = [];
+  List dataBitacora = [];
+
+  String bitacoraId = '0';
+
   int numberAppoints = 0;
 
   List<Appointment> appointments = [];
+  List<BitacoraEntry> entries = [];
+
 
   String convoId = '';
 
   bool _isHomeForm = true;
   bool _isLoading = true;
+  bool _hasEntryToday = false;
+
 
   Future<String> getConversation(currentUserId) async {
     //print(currentUserId);
@@ -95,14 +107,41 @@ class _HomeViewState extends State<HomeView> {
     return responseRecs.body.toString();
   }
 
+
+  Future<String> getBitacora() async {
+    _isLoading = true;
+
+    var responseResults = await http.get(
+        Uri.parse(url + "students/"+  widget.userId.toString() +"/binnacles"),
+        headers: headers());
+
+    setState(() {
+      var extractdataBitacora = json.decode(responseResults.body);
+      bitacoraId = extractdataBitacora['id'].toString();
+      dataBitacora = extractdataBitacora['binnacleEntries'];
+      print(dataBitacora);
+
+      for (var info in dataBitacora) {
+        if ( DateFormat('d/M/y').format(DateTime.parse(info['createdAt'])) == DateFormat('d/M/y').format(DateTime.now())) {
+            _hasEntryToday = true;
+        }      
+      }
+      print(_hasEntryToday);
+    });
+    return responseResults.body.toString();
+  }
+
+
   @override
   void initState() {
     super.initState();
     getAppoints();
+    getBitacora();
   }
 
   @override
   Widget build(BuildContext context) {
+    getBitacora();
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -229,10 +268,11 @@ class _HomeViewState extends State<HomeView> {
                       Expanded(
                         child: CustomButtonSmall(
                             height: 160,                   
-                            hasNotification: false,
                         margin: EdgeInsets.only(left: 15, top: 2),
                             isWhiteButton: true,
                             text: "BITÁCORA",
+                            hasNotification: _hasEntryToday ? false : true,
+                            notificationNumber: '+',
                             image: DecorationImage(
                             image: AssetImage('assets/images/bitacora-back.png'),
                             fit: BoxFit.cover,
@@ -242,13 +282,24 @@ class _HomeViewState extends State<HomeView> {
                                   context,
                                   listen: false);
                               getConversation(currentUser.myCurrentUser.id);
-                              Navigator.push(
+                              if ( _hasEntryToday ) {
+                                Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => BitacoraView(
                                         currentUserModel.myCurrentUser.id
                                             .toString())),
                               );
+
+                              } else {
+                                Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Bitacora1View()
+                                    ),
+                              );
+                              }
+                              
                             }),
                       ),
                            SizedBox(
@@ -260,7 +311,7 @@ class _HomeViewState extends State<HomeView> {
                         hasNotification: true,
                         margin: EdgeInsets.only(right: 15, top: 2),
                         isWhiteButton: true,
-                        notificationNumber: numberAppoints,
+                        notificationNumber: numberAppoints.toString(),
                         image: DecorationImage(
                             image: AssetImage('assets/images/cita-back.png'),
                             fit: BoxFit.cover,
