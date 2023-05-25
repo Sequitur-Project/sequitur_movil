@@ -154,7 +154,7 @@ class _BitacoraViewState extends State<BitacoraView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "Bitacora",
+                              "Bitácora",
                               style: TextStyle(
                                   color: AppColors.APPBAR_TEXT,
                                   fontSize: 20,
@@ -251,8 +251,7 @@ class DateRectangle extends StatelessWidget {
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    capitalize("${DateFormat.EEEE('es_ES').format(date)}") +
-                        " ${DateFormat('d • M • y').format(date)}",
+                    (isToday ? "HOY • " : "") + "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}" ,
                     textAlign: TextAlign.left,
                     style:
                         TextStyle(color: AppColors.APPBAR_TEXT, fontSize: 15),
@@ -325,8 +324,7 @@ class DateRectangle extends StatelessWidget {
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    capitalize("${DateFormat.EEEE('es_ES').format(date)}") +
-                        " ${DateFormat('d • M • y').format(date)}",
+                    (isToday ? "HOY" : "") + "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}" ,
                     textAlign: TextAlign.left,
                     style:
                         TextStyle(color: AppColors.APPBAR_TEXT, fontSize: 15),

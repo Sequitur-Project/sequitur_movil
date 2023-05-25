@@ -9,21 +9,25 @@ class CustomButtonSmall extends StatelessWidget {
       required this.text,
       required this.isWhiteButton,  
       required this.hasNotification,  
+      required this.height,
       this.notificationNumber,
       this.fontWeight,
       this.padding,
-      this.margin,          
+      this.margin,  
+      this.image,        
      })
       : super(key: key);
 
   final GestureTapCallback tap;
   final String text;
+  final double height;
   final bool isWhiteButton;
   final bool hasNotification;
   final int? notificationNumber;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final FontWeight? fontWeight;
+  final DecorationImage? image;
   
 
 
@@ -37,13 +41,15 @@ class CustomButtonSmall extends StatelessWidget {
     return GestureDetector(
       onTap: tap,
       child: Container(
-        width: double.infinity,
-        height: AppDimensions.SMALL_BUTTON_DIMENSIONS_HEIGHT,
+        height: this.height,
+        //height: AppDimensions.SMALL_BUTTON_DIMENSIONS_HEIGHT,
         padding: this.padding,
         margin: this.margin,
+        
         decoration: BoxDecoration(
           color: isWhiteButton ? AppColors.BUTTON_COLOR_WHITE : AppColors.BUTTON_COLOR,
           borderRadius: BorderRadius.circular(8.0),
+          image: image,
         ),
         alignment: Alignment.center,
         child: _hasNotif ? 

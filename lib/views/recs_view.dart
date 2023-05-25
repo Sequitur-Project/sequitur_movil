@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sequitur_movil/components/bottom_button.dart';
 import 'package:sequitur_movil/models/bitacora_entry_model.dart';
+import 'package:sequitur_movil/models/recs_model.dart';
 import 'package:sequitur_movil/views/bitacora_1_view.dart';
 import 'package:sequitur_movil/views/home_view.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -17,6 +18,8 @@ import 'package:sequitur_movil/resources/app_dimens.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
 
 import 'package:http/http.dart' as http;
 
@@ -28,7 +31,10 @@ class RecsView extends StatefulWidget {
   _RecsViewState createState() => _RecsViewState();
 }
 
+
+
 class _RecsViewState extends State<RecsView> {
+  
   String url = "https://back-sequitur-production.up.railway.app/api/";
 
   Map newMessage = new Map();
@@ -38,8 +44,11 @@ class _RecsViewState extends State<RecsView> {
   int score = 0;
   List dataRecs = [];
   
-  List<String> recs = [];
+  //List<String> recs = [];
+  List<RecsModel> recs = [];
   bool _isLoading = true;
+
+  final DateTime time1 = DateTime.parse("1987-07-20 20:18:04Z");
 
   Future<String> getRecs() async {
     _isLoading = true;
@@ -55,8 +64,12 @@ class _RecsViewState extends State<RecsView> {
       print(dataRecs); 
 
       for (var info in dataRecs) {
-        recs.add(info['text']);
+        recs.add(RecsModel(text: info['text'], date: DateTime.parse(info['createdAt'])));
+        //recs.add(info['text']);
       }
+
+      recs.sort((b, a) => a.date.compareTo(b.date));   
+
 
     });
 
@@ -72,6 +85,8 @@ class _RecsViewState extends State<RecsView> {
 
   @override
   Widget build(BuildContext context) {
+    timeago.setLocaleMessages('es', timeago.EsMessages());
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -154,20 +169,42 @@ class _RecsViewState extends State<RecsView> {
                   child: ListView.builder(
                   itemCount: recs.length,
                   itemBuilder: (BuildContext context, int index) {
-                          String item = recs[index];
-                          return Container(
-                            padding: EdgeInsets.all(20.0),
-                            margin: EdgeInsets.symmetric(horizontal:20.0,vertical:10),
-                            decoration: BoxDecoration(
-                              color: AppColors.WHITE,
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Text(item
-                            ,style: TextStyle(
-                            color: AppColors.BUTTON_TEXT_COLOR_WHITE,
-                            fontSize: 16,
-                            ),
-                            ),
+                          String item = recs[index].text;
+                          return Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(20.0),
+                                margin: EdgeInsets.symmetric(horizontal:20.0,vertical:5),
+                                decoration: BoxDecoration(
+                                  color: AppColors.WHITE,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Text(item
+                                ,style: TextStyle(
+                                color: AppColors.BUTTON_TEXT_COLOR_WHITE,
+                                fontSize: 16,
+                                ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(bottom:20.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(child: SizedBox(),),
+                                    Icon(Icons.access_time,
+                                    color: AppColors.WHITE,
+                                    size: 20,),
+                                    SizedBox(width:5),
+                                    Text(
+                                      timeago.format(recs[index].date,locale: 'es'),
+                                      style: TextStyle(color: AppColors.WHITE),
+                                    
+                                    ),
+                                    SizedBox(width: 20,)
+                                  ],
+                                )
+                              )
+                            ],
                           );
                         },
                 ))),

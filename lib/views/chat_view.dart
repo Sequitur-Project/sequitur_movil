@@ -60,13 +60,15 @@ class _ChatViewState extends State<ChatView> {
         var responseBot = await http.get(Uri.parse(url + "conversations/"+ convoId +"/botMessages?page=0&size=99999"), headers: headers());
 
         setState(() {
+          print(responseUser);
+          print(responseBot);
           var extractdataUser = json.decode(utf8.decode(responseUser.bodyBytes));
           var extractdataBot = json.decode(utf8.decode(responseBot.bodyBytes));
           extractdataUser = extractdataUser['content'];
           extractdataBot = extractdataBot['content'];
 
-          //print(extractdataUser);
-          //print(extractdataBot);
+          print(extractdataUser);
+          print(extractdataBot);
 
           for (var info in extractdataUser) {
              messages.add(ChatMessage(message: info['message'], date:DateTime.parse(info['createdAt']), sender: 'student')); 
@@ -88,23 +90,23 @@ class _ChatViewState extends State<ChatView> {
               obj.message = 'Casi todos los dias';
             } 
 
-            if (obj.message == 'Gracias por responder las preguntas. Tu puntaje es:'){
+            // if (obj.message == 'Gracias por responder las preguntas. Tu puntaje es:'){
 
-              var responseResults = await http.get(
-                  Uri.parse("${url}students/${widget.userId}/results"),
-                  headers: headers());    
+            //   var responseResults = await http.get(
+            //       Uri.parse("${url}students/${widget.userId}/results"),
+            //       headers: headers());    
 
-                var extractdataResults = json.decode(responseResults.body);
-                var scored = extractdataResults.last['score'] - extractdataResults[extractdataResults.length - 2]['score'];
+            //     var extractdataResults = json.decode(responseResults.body);
+            //     var scored = extractdataResults.last['score'] - extractdataResults[extractdataResults.length - 2]['score'];
 
-                setState(() {
-                    obj.message = 'Gracias por responder las preguntas. Tu puntaje es: ${scored}.';
-                  WidgetsBinding.instance?.addPostFrameCallback((_) {
-                            _controller.jumpTo(_controller.position.maxScrollExtent);
-              });
-                 });
+            //     setState(() {
+            //         obj.message = 'Gracias por responder las preguntas. Tu puntaje es: ${scored}.';
+            //       WidgetsBinding.instance?.addPostFrameCallback((_) {
+            //                 _controller.jumpTo(_controller.position.maxScrollExtent);
+            //   });
+            //      });
 
-            }
+            // }
           });   
           //messages = messages.map((obj) => obj.message == '0' ? ChatMessage(message: 'Ningún dia', sender:obj.sender, date:obj.date) : obj).toList();
           if (

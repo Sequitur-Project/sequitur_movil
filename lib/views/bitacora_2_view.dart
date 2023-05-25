@@ -284,7 +284,7 @@ List<Widget> _buildRadioButtons() {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Bitacora",
+                          "Bitácora",
                           style: TextStyle(
                               color: AppColors.APPBAR_TEXT,
                               fontSize: 20,

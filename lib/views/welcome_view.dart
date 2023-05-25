@@ -154,6 +154,7 @@ class _WelcomeViewState extends State<WelcomeView> {
                   height: 13,
                 ),
                 CustomButtonSmall(
+                  height:2,
                     margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                     isWhiteButton: true,
                     hasNotification: false,
@@ -167,10 +168,12 @@ class _WelcomeViewState extends State<WelcomeView> {
                   height: 4,
                 ),
                 CustomButtonSmall(
+                                    height:2,
+
                     hasNotification: false,
                     margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                     isWhiteButton: true,
-                    text: "BITACORA",
+                    text: "BITÁCORA",
                     tap: () {
                       final currentUser =
                           Provider.of<CurrentUserModel>(context, listen: false);
@@ -180,6 +183,8 @@ class _WelcomeViewState extends State<WelcomeView> {
                   height: 4,
                 ),
                 CustomButtonSmall(
+                                    height:2,
+
                     hasNotification: true,
                     margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                     isWhiteButton: true,

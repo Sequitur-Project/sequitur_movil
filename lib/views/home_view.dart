@@ -20,11 +20,12 @@ import 'package:sequitur_movil/endpoints/endpoints.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:sequitur_movil/views/config_view.dart';
+import 'package:sequitur_movil/views/recs_view.dart';
 import 'package:sequitur_movil/views/results_view.dart';
+import 'package:simple_animations/multi_tween/multi_tween.dart';
 
 class HomeView extends StatefulWidget {
   final int userId;
-
   HomeView(this.userId);
 
   @override
@@ -37,6 +38,7 @@ class _HomeViewState extends State<HomeView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final currentUser = Provider.of<CurrentUserModel>;
+  String dataConvoId = '0';
 
   List dataAppoints = [];
   int numberAppoints = 0;
@@ -48,7 +50,6 @@ class _HomeViewState extends State<HomeView> {
   bool _isHomeForm = true;
   bool _isLoading = true;
 
-
   Future<String> getConversation(currentUserId) async {
     //print(currentUserId);
     var response = await http.get(
@@ -58,17 +59,18 @@ class _HomeViewState extends State<HomeView> {
 
     setState(() {
       var extractdata = json.decode(response.body);
-      dataConversation = extractdata['content'];
+      dataConvoId = extractdata['id'].toString();
     });
     //print(dataConversation);
-    return dataConversation[0]['id'].toString();
+    return dataConvoId;
   }
 
-  
   Future<String> getAppoints() async {
     numberAppoints = 0;
-    var responseRecs = await http
-        .get(Uri.parse(url + "students/"+ widget.userId.toString() +"/appointments"), headers: headers());
+    var responseRecs = await http.get(
+        Uri.parse(
+            url + "students/" + widget.userId.toString() + "/appointments"),
+        headers: headers());
 
     setState(() {
       var extractdataBitacora =
@@ -78,8 +80,8 @@ class _HomeViewState extends State<HomeView> {
       print(dataAppoints);
 
       for (var info in dataAppoints) {
-        if (info['accepted'] == false){
-            numberAppoints = numberAppoints + 1;
+        if (info['accepted'] == false) {
+          numberAppoints = numberAppoints + 1;
         }
 
         appointments.add(Appointment(
@@ -91,9 +93,9 @@ class _HomeViewState extends State<HomeView> {
       }
     });
     return responseRecs.body.toString();
-    }
+  }
 
-     @override
+  @override
   void initState() {
     super.initState();
     getAppoints();
@@ -158,17 +160,19 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 Consumer<CurrentUserModel>(
                   builder: (context, currentUserModel, child) {
-                  return GestureDetector(
-                    onTap: () {
-                        Navigator.push(
+                    return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ConfigView(currentUserModel.myCurrentUser.id)),
-                        );
-                      },
-                      child: Icon(Icons.settings, color: AppColors.APPBAR_TEXT));
-  },
-  ),
+                                builder: (context) => ConfigView(
+                                    currentUserModel.myCurrentUser.id)),
+                          );
+                        },
+                        child:
+                            Icon(Icons.settings, color: AppColors.APPBAR_TEXT));
+                  },
+                ),
               ],
             ),
           ),
@@ -182,106 +186,147 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         child: Consumer<CurrentUserModel>(
-          builder: (context, currentUserModel, child) {
-            return Stack(children: <Widget>[
-              Container(
-                  padding: EdgeInsets.only(
-                      top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 10),
-                  child: Column(children: <Widget>[
-                    CustomButton(
-                        isWhiteButton: true,
-                        text: "CHAT",
-                        tap: () async {
-                          final currentUser =
-                              Provider.of<CurrentUserModel>(context, listen: false);
-                          convoId =
-                              await getConversation(currentUser.myCurrentUser.id);
-                          if (convoId != '' || convoId != ' ' || convoId != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ChatView(convoId,currentUserModel.myCurrentUser.id.toString())),
-                            );
-                          }
-                        }),
-                    SizedBox(
-                      height: 13,
-                    ),
-                    CustomButtonSmall(
-                        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                        isWhiteButton: true,
-                        hasNotification: false,
-                        text: "RESULTADOS",
-                        tap: () {
-                          final currentUser =
-                              Provider.of<CurrentUserModel>(context, listen: false);
-                          getConversation(currentUser.myCurrentUser.id);
+            builder: (context, currentUserModel, child) {
+          return Stack(children: <Widget>[
+            Container(
+                padding: EdgeInsets.only(
+                    top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 10),
+                child: Column(children: <Widget>[                 
+                  CustomButtonSmall(
+                    height: 300,
+                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    hasNotification: false,
+                      isWhiteButton: true,
+                      image: DecorationImage(
+                            image: AssetImage('assets/images/chat-back.png'),
+                            fit: BoxFit.cover,
+                          ),
+                      text: "CHAT",                      
+                      tap: () async {
+                        final currentUser = Provider.of<CurrentUserModel>(
+                            context,
+                            listen: false);
+                        convoId =
+                            await getConversation(currentUser.myCurrentUser.id);
+                        if (convoId != '' ||
+                            convoId != ' ' ||
+                            convoId != null) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ResultsView(currentUserModel.myCurrentUser.id)),
+                            MaterialPageRoute(
+                                builder: (context) => ChatView(
+                                    convoId,
+                                    currentUserModel.myCurrentUser.id
+                                        .toString())),
                           );
-                        }),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    CustomButtonSmall(
-                        hasNotification: false,
-                        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                        isWhiteButton: true,
-                        text: "BITACORA",
-                        tap: () {
-                          final currentUser =
-                              Provider.of<CurrentUserModel>(context, listen: false);
-                          getConversation(currentUser.myCurrentUser.id);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => BitacoraView(currentUserModel.myCurrentUser.id.toString())),
-                          );
-                        }),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    CustomButtonSmall(
+                        }
+                      }),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButtonSmall(
+                            height: 160,                   
+                            hasNotification: false,
+                        margin: EdgeInsets.only(left: 15, top: 2),
+                            isWhiteButton: true,
+                            text: "BITÁCORA",
+                            image: DecorationImage(
+                            image: AssetImage('assets/images/bitacora-back.png'),
+                            fit: BoxFit.cover,
+                          ),
+                            tap: () {
+                              final currentUser = Provider.of<CurrentUserModel>(
+                                  context,
+                                  listen: false);
+                              getConversation(currentUser.myCurrentUser.id);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BitacoraView(
+                                        currentUserModel.myCurrentUser.id
+                                            .toString())),
+                              );
+                            }),
+                      ),
+                           SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: CustomButtonSmall(
+                        height: 160,
                         hasNotification: true,
-                        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                        margin: EdgeInsets.only(right: 15, top: 2),
                         isWhiteButton: true,
                         notificationNumber: numberAppoints,
+                        image: DecorationImage(
+                            image: AssetImage('assets/images/cita-back.png'),
+                            fit: BoxFit.cover,
+                          ),
                         text: "CITAS",
                         tap: () {
-                          final currentUser =
-                              Provider.of<CurrentUserModel>(context, listen: false);
+                          final currentUser = Provider.of<CurrentUserModel>(
+                              context,
+                              listen: false);
                           getConversation(currentUser.myCurrentUser.id);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AppointmentView(currentUser.myCurrentUser.id)),
+                                builder: (context) => AppointmentView(
+                                    currentUser.myCurrentUser.id)),
                           );
                         }),
-                  ])),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Container(
-                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                  margin: EdgeInsets.all(20),
-                  height: 60,
-                  width: double.infinity,
-                  child: Row(
-                    children: <Widget>[
-                      SizedBox(
-                        width: 15,
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
+                  ),
                     ],
                   ),
+                   SizedBox(
+                    height: 6,
+                  ),
+                  CustomButtonSmall(
+                      height: 100,
+                      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                      isWhiteButton: true,
+                      hasNotification: false,
+                      
+                      text: "RECOMENDACIONES",
+                      tap: () {
+                        final currentUser = Provider.of<CurrentUserModel>(
+                            context,
+                            listen: false);
+                        getConversation(currentUser.myCurrentUser.id);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  RecsView(currentUserModel.myCurrentUser.id)),
+                        );
+                      }),
+                 
+                ])),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Container(
+                padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                margin: EdgeInsets.all(20),
+                height: 60,
+                width: double.infinity,
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 15,
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                  ],
                 ),
               ),
-            ]);
-          }
-        ) /* add child content here */,
+            ),
+          ]);
+        }) /* add child content here */,
       ),
     );
   }
 }
-
