@@ -30,11 +30,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  provider: ^6.0.0
+  flutter_riverpod: ^1.0.4
+  syncfusion_flutter_gauges: ^21.1.41
+  simple_animations : 4.2.0
+  loading_animation_widget:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  http: ^0.13.5
+  timeago: ^3.4.0
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +67,22 @@ flutter:
 
   assets:
       - assets/images/background.png
+      - assets/images/icon.png
+      - assets/images/miedo.png
+      - assets/images/enojo.png
+      - assets/images/aversion.png
+      - assets/images/tristeza.png
+      - assets/images/felicidad.png
+      - assets/images/sorpresa.png
+      - assets/images/IMAGOTIPO.png
+      - assets/images/chat-back.png     
+      - assets/images/cita-back.png 
+      - assets/images/recs-back.png 
+      - assets/images/bitacora-back.png 
+      - assets/images/chat-back.gif
+
+
+
 
   fonts:
       - family: HermeneusOne
