@@ -29,7 +29,7 @@ class BottomButton extends StatelessWidget {
       onTap: tap,
       child: Container(
         width: double.infinity,
-        height: AppDimensions.BUTTON_DIMENSIONS_HEIGHT,
+        height: AppDimensions.BOTTOM_BUTTON_DIMENSIONS_HEIGHT,
         padding: this.padding,
         margin: this.margin,
         decoration: BoxDecoration(
