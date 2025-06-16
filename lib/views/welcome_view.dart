@@ -4,22 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sequitur_movil/components/custom_button_small.dart';
 import 'package:sequitur_movil/models/current_user_model.dart';
-import 'package:sequitur_movil/models/user_model.dart';
 
-import 'package:sequitur_movil/components/bottom_button.dart';
 import 'package:sequitur_movil/components/custom_button.dart';
-import 'package:sequitur_movil/components/custom_text_field.dart';
-import 'package:sequitur_movil/components/title_desc.dart';
+
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
-import 'package:sequitur_movil/views/appointment_view.dart';
-import 'package:sequitur_movil/views/bitacora_view.dart';
-import 'package:sequitur_movil/views/chat_view.dart';
+
 import 'package:sequitur_movil/endpoints/endpoints.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:sequitur_movil/views/config_view.dart';
-import 'package:sequitur_movil/views/results_view.dart';
 
 class WelcomeView extends StatefulWidget {
   @override
@@ -27,7 +21,7 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView> {
-  String url = "https://back-sequitur-production.up.railway.app/api/";
+  String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
   List dataConversation = [];
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -38,7 +32,7 @@ class _WelcomeViewState extends State<WelcomeView> {
   bool _isHomeForm = true;
 
   Future<String> getConversation(currentUserId) async {
-    //print(currentUserId);
+    print(currentUserId);
     var response = await http.get(
         Uri.parse(
             url + "students/" + currentUserId.toString() + "/conversations"),
@@ -48,7 +42,7 @@ class _WelcomeViewState extends State<WelcomeView> {
       var extractdata = json.decode(response.body);
       dataConversation = extractdata['content'];
     });
-    //print(dataConversation);
+    print(dataConversation);
     return dataConversation[0]['id'].toString();
   }
 
@@ -111,17 +105,19 @@ class _WelcomeViewState extends State<WelcomeView> {
                 ),
                 Consumer<CurrentUserModel>(
                   builder: (context, currentUserModel, child) {
-                  return GestureDetector(
-                    onTap: () {
-                        Navigator.push(
+                    return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ConfigView(currentUserModel.myCurrentUser.id)),
-                        );
-                      },
-                      child: Icon(Icons.settings, color: AppColors.APPBAR_TEXT));
-  },
-  ),
+                                builder: (context) => ConfigView(
+                                    currentUserModel.myCurrentUser.id)),
+                          );
+                        },
+                        child:
+                            Icon(Icons.settings, color: AppColors.APPBAR_TEXT));
+                  },
+                ),
               ],
             ),
           ),
@@ -147,14 +143,13 @@ class _WelcomeViewState extends State<WelcomeView> {
                           Provider.of<CurrentUserModel>(context, listen: false);
                       convoId =
                           await getConversation(currentUser.myCurrentUser.id);
-                      if (convoId != '' || convoId != ' ' || convoId != null) {                        
-                      }
+                      if (convoId != '' || convoId != ' ' || convoId != null) {}
                     }),
                 SizedBox(
                   height: 13,
                 ),
                 CustomButtonSmall(
-                  height:2,
+                    height: 2,
                     margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                     isWhiteButton: true,
                     hasNotification: false,
@@ -162,14 +157,13 @@ class _WelcomeViewState extends State<WelcomeView> {
                     tap: () {
                       final currentUser =
                           Provider.of<CurrentUserModel>(context, listen: false);
-                      getConversation(currentUser.myCurrentUser.id);                      
+                      getConversation(currentUser.myCurrentUser.id);
                     }),
                 SizedBox(
                   height: 4,
                 ),
                 CustomButtonSmall(
-                                    height:2,
-
+                    height: 2,
                     hasNotification: false,
                     margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                     isWhiteButton: true,
@@ -177,14 +171,13 @@ class _WelcomeViewState extends State<WelcomeView> {
                     tap: () {
                       final currentUser =
                           Provider.of<CurrentUserModel>(context, listen: false);
-                      getConversation(currentUser.myCurrentUser.id);                      
+                      getConversation(currentUser.myCurrentUser.id);
                     }),
                 SizedBox(
                   height: 4,
                 ),
                 CustomButtonSmall(
-                                    height:2,
-
+                    height: 2,
                     hasNotification: true,
                     margin: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                     isWhiteButton: true,
@@ -193,7 +186,6 @@ class _WelcomeViewState extends State<WelcomeView> {
                       final currentUser =
                           Provider.of<CurrentUserModel>(context, listen: false);
                       getConversation(currentUser.myCurrentUser.id);
-                      
                     }),
               ])),
           Align(

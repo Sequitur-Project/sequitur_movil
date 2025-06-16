@@ -1,25 +1,13 @@
-import 'dart:convert';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sequitur_movil/components/bottom_button.dart';
-import 'package:sequitur_movil/models/bitacora_entry_model.dart';
+
 import 'package:sequitur_movil/models/user_model.dart';
-import 'package:sequitur_movil/views/bitacora_1_view.dart';
-import 'package:sequitur_movil/views/home_view.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:sequitur_movil/components/custom_button.dart';
-import 'package:sequitur_movil/components/custom_text_field.dart';
-import 'package:sequitur_movil/components/title_desc.dart';
-import 'package:sequitur_movil/models/chat_message_model.dart';
+
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
-import 'package:sequitur_movil/endpoints/endpoints.dart';
-import 'package:intl/intl.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ProfileView extends StatefulWidget {
   final UserModel? user;
@@ -139,8 +127,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   letterSpacing: 1),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                     Container(
                         padding: EdgeInsets.only(
                             top: 0, bottom: 25, left: 25, right: 25),
@@ -159,8 +146,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   letterSpacing: 1),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                     Container(
                         padding: EdgeInsets.only(
                             top: 0, bottom: 25, left: 25, right: 25),
@@ -179,8 +165,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   letterSpacing: 1),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                     Container(
                         padding: EdgeInsets.only(
                             top: 0, bottom: 25, left: 25, right: 25),
@@ -199,8 +184,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   letterSpacing: 1),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                     Container(
                         padding: EdgeInsets.only(
                             top: 0, bottom: 45, left: 25, right: 25),
@@ -219,8 +203,7 @@ class _ProfileViewState extends State<ProfileView> {
                                   letterSpacing: 1),
                             ),
                           ],
-                        )
-                    ),
+                        )),
                   ],
                 ),
               ],

@@ -2,22 +2,17 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sequitur_movil/components/bottom_button.dart';
-import 'package:sequitur_movil/models/bitacora_entry_model.dart';
+
 import 'package:sequitur_movil/models/user_model.dart';
-import 'package:sequitur_movil/views/bitacora_1_view.dart';
+
 import 'package:sequitur_movil/views/home_view.dart';
 import 'package:sequitur_movil/views/profile_view.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:sequitur_movil/components/custom_button.dart';
-import 'package:sequitur_movil/components/custom_text_field.dart';
-import 'package:sequitur_movil/components/title_desc.dart';
-import 'package:sequitur_movil/models/chat_message_model.dart';
+
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
-import 'package:intl/intl.dart';
+
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:http/http.dart' as http;
@@ -34,20 +29,20 @@ class _ConfigViewState extends State<ConfigView> {
   final int userId;
   _ConfigViewState(this.userId);
 
-  String url = "https://back-sequitur-production.up.railway.app/api/";
+  String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
 
   List dataUser = [];
 
   UserModel currentUseri = UserModel(
-      id: 0,
-      firstName: '',
-      lastName: '',
-      email: '',
-      telephone: '',
-      universityId: 0,
-      gender: '',
-      password: '',
-      );
+    id: 0,
+    firstName: '',
+    lastName: '',
+    email: '',
+    telephone: '',
+    universityId: 0,
+    gender: '',
+    password: '',
+  );
   bool _isLoading = true;
 
   Future<String> getUser() async {
@@ -98,7 +93,8 @@ class _ConfigViewState extends State<ConfigView> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeView(widget.userId)),
+                        MaterialPageRoute(
+                            builder: (context) => HomeView(widget.userId)),
                       );
                     },
                     icon: Icon(
@@ -178,25 +174,29 @@ class _ConfigViewState extends State<ConfigView> {
                               color: Colors.white,
                               child: Row(
                                 children: [
-                                  Icon(Icons.person, color: AppColors.BUTTON_COLOR),
+                                  Icon(Icons.person,
+                                      color: AppColors.BUTTON_COLOR),
                                   SizedBox(
                                     width: 13,
                                   ),
-                                  Text('CUENTA',
-                                  style:
-                                  TextStyle(
-                                  color: AppColors.TEXT_COLOR_GRAY, letterSpacing: 1),),
+                                  Text(
+                                    'CUENTA',
+                                    style: TextStyle(
+                                        color: AppColors.TEXT_COLOR_GRAY,
+                                        letterSpacing: 1),
+                                  ),
                                 ],
                               )),
-                           GestureDetector(
+                          GestureDetector(
                             onTap: () {
                               Navigator.push(
-                                      context,
-                                      SlidePageRoute(page: ProfileView(currentUseri)),
-                                    );                              
+                                context,
+                                SlidePageRoute(page: ProfileView(currentUseri)),
+                              );
                             },
-                             child: Container(
-                                padding: EdgeInsets.only(top:0,bottom:25,left:25,right:25),
+                            child: Container(
+                                padding: EdgeInsets.only(
+                                    top: 0, bottom: 25, left: 25, right: 25),
                                 alignment: Alignment.topCenter,
                                 color: Colors.white,
                                 child: Row(
@@ -204,45 +204,48 @@ class _ConfigViewState extends State<ConfigView> {
                                     SizedBox(
                                       width: 38,
                                     ),
-                                    Text('Ver información personal',
-                                    style:
-                                    TextStyle(
-                                    color: AppColors.TEXT_COLOR_GRAY, letterSpacing: 1),),
+                                    Text(
+                                      'Ver información personal',
+                                      style: TextStyle(
+                                          color: AppColors.TEXT_COLOR_GRAY,
+                                          letterSpacing: 1),
+                                    ),
                                     Expanded(
                                       child: SizedBox(),
                                     ),
-                                    Icon(Icons.keyboard_arrow_right_outlined, color: AppColors.BUTTON_COLOR),
-                           
+                                    Icon(Icons.keyboard_arrow_right_outlined,
+                                        color: AppColors.BUTTON_COLOR),
                                   ],
                                 )),
-                           ),   
+                          ),
                         ],
                       ),
                       GestureDetector(
-
                         onTap: () {
-                            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                          },                    
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/login', (route) => false);
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height:4
-                            ),
+                            SizedBox(height: 4),
                             Container(
                                 padding: EdgeInsets.all(25),
                                 alignment: Alignment.topCenter,
                                 color: Colors.white,
                                 child: Row(
                                   children: [
-                                    Icon(Icons.logout, color: AppColors.BUTTON_COLOR),
+                                    Icon(Icons.logout,
+                                        color: AppColors.BUTTON_COLOR),
                                     SizedBox(
                                       width: 13,
                                     ),
-                                    Text('CERRAR SESIÓN',
-                                    style:
-                                    TextStyle(
-                                    color: AppColors.TEXT_COLOR_GRAY, letterSpacing: 1),),
+                                    Text(
+                                      'CERRAR SESIÓN',
+                                      style: TextStyle(
+                                          color: AppColors.TEXT_COLOR_GRAY,
+                                          letterSpacing: 1),
+                                    ),
                                   ],
                                 )),
                           ],
@@ -255,7 +258,6 @@ class _ConfigViewState extends State<ConfigView> {
   }
 }
 
-
 class SlidePageRoute extends PageRouteBuilder {
   final Widget page;
 
@@ -267,8 +269,8 @@ class SlidePageRoute extends PageRouteBuilder {
             var end = Offset.zero;
             var curve = Curves.ease;
 
-            var tween = Tween(begin: begin, end: end)
-                .chain(CurveTween(curve: curve));
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
             return SlideTransition(
               position: animation.drive(tween),

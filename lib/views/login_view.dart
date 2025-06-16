@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:provider/provider.dart';
-import 'package:sequitur_movil/components/custom_dropdown.dart';
+
 import 'package:sequitur_movil/models/current_user_model.dart';
 
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:sequitur_movil/components/title_desc.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
 import 'package:sequitur_movil/models/university_model.dart';
 import 'package:sequitur_movil/models/user_model.dart';
-import 'package:sequitur_movil/resources/app_colors.dart';
+
 import 'package:sequitur_movil/views/home_view.dart';
 import 'package:http/http.dart' as http;
 import 'package:sequitur_movil/views/register_view.dart';
@@ -22,7 +22,7 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  String url = "https://back-sequitur-production.up.railway.app/api/";
+  String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -88,15 +88,15 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
           child: Container(
-            padding: EdgeInsets.only(top:20),
+            padding: EdgeInsets.only(top: 20),
             child: Center(
-                              child: Image.asset(
-                                ('assets/images/IMAGOTIPO.png'),
-                                fit: BoxFit.cover,
-                                width: 288/1.5,
-                                height: 180/1.5,
-                              ),
-                            ),
+              child: Image.asset(
+                ('assets/images/IMAGOTIPO.png'),
+                fit: BoxFit.cover,
+                width: 288 / 1.5,
+                height: 180 / 1.5,
+              ),
+            ),
           ), /* add child content here */
         ),
         bottomNavigationBar: BottomButton(
@@ -169,14 +169,14 @@ class _LoginViewState extends State<LoginView> {
                                         tap: () {
                                           getUser();
                                           userInfo = UserModel(
-                                          email: '',
-                                          password: '',
-                                          firstName: '',
-                                          id: 0,
-                                          lastName: '',
-                                          telephone: '',
-                                          gender: '',
-                                          universityId: 0);
+                                              email: '',
+                                              password: '',
+                                              firstName: '',
+                                              id: 0,
+                                              lastName: '',
+                                              telephone: '',
+                                              gender: '',
+                                              universityId: 0);
                                           final RegExp emailRegex = RegExp(
                                               r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
@@ -185,14 +185,14 @@ class _LoginViewState extends State<LoginView> {
                                           });
 
                                           if (_passwordController
-                                                  .text.isNotEmpty) {
-                                              } else {
-                                                setModalState(() {
-                                                   passValid = false;
-                                                  _passwordError =
-                                                      'Ingrese su contraseña.';
-                                                });
-                                              }
+                                              .text.isNotEmpty) {
+                                          } else {
+                                            setModalState(() {
+                                              passValid = false;
+                                              _passwordError =
+                                                  'Ingrese su contraseña.';
+                                            });
+                                          }
 
                                           if (_emailController.text == '') {
                                             userValid = false;
@@ -224,8 +224,7 @@ class _LoginViewState extends State<LoginView> {
                                                     universityId:
                                                         cosa['universityId']);
                                                 userId = cosa['id'];
-                                              }                                             
-
+                                              }
                                             }
                                             setModalState(() {
                                               if (userExists) {
@@ -239,7 +238,7 @@ class _LoginViewState extends State<LoginView> {
                                                   _emailError =
                                                       'Correo no registrado.';
                                                 });
-                                              }                                              
+                                              }
 
                                               if (_passwordController
                                                       .text.isNotEmpty &&

@@ -1,122 +1,35 @@
-import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sequitur_movil/components/bottom_button.dart';
 import 'package:sequitur_movil/components/custom_paragraph_field.dart';
 import 'package:sequitur_movil/views/bitacora_4_view.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:sequitur_movil/components/custom_button.dart';
-import 'package:sequitur_movil/components/custom_text_field.dart';
-import 'package:sequitur_movil/components/title_desc.dart';
-import 'package:sequitur_movil/models/chat_message_model.dart';
+
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
-import 'package:sequitur_movil/endpoints/endpoints.dart';
+
 import 'package:intl/intl.dart';
 
-import 'package:http/http.dart' as http;
-
 class Bitacora3View extends StatefulWidget {
-
   final String emoji;
   final String feeling;
-  Bitacora3View(this.emoji, this.feeling);
+  final String binnacleId;
 
+  Bitacora3View(this.emoji, this.feeling, this.binnacleId);
 
   @override
-  _Bitacora3ViewState createState() => _Bitacora3ViewState(emoji, feeling);
+  _Bitacora3ViewState createState() => _Bitacora3ViewState();
 }
 
 class _Bitacora3ViewState extends State<Bitacora3View> {
-  final String emoji;
-  final String feeling;
-  _Bitacora3ViewState(this.emoji, this.feeling);
-
-  String url = "https://back-sequitur-production.up.railway.app/api/";
-
-  Map newMessage = new Map();
-  final _myMessageController = TextEditingController();
-
   final _reasonController = TextEditingController();
-  final _extraController = TextEditingController();
+  bool _showError = false;
 
-  final _controller = ScrollController();
-  int score = 0;
-  List dataResults = [];
-
-  final DateTime startDate = DateTime(2023, 5, 1);
-  final DateTime endDate = DateTime(2023, 5, 4);
-  int _selectedValue = 0; // Initially no radio button is selected
-
-final List<Map<String, dynamic>> _buttonData = [
-  {'text': 'Miedo', 'image': 'assets/images/miedo.png'},
-  {'text': 'Enojo', 'image': 'assets/images/enojo.png'},
-  {'text': 'Aversión', 'image': 'assets/images/aversion.png'},
-  {'text': 'Tristeza', 'image': 'assets/images/tristeza.png'},
-  {'text': 'Felicidad', 'image': 'assets/images/felicidad.png'},
-  {'text': 'Sorpresa', 'image': 'assets/images/sorpresa.png'},
-];
-
-List<Widget> _buildRadioButtons() {
-  List<Widget> list = [];
-  for (int i = 0; i < _buttonData.length; i++) {
-    list.add(
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal:20, vertical: 4.0),
-        child: TextButton(
-          child: Container(
-            width:double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [             
-                Text(
-                  _buttonData[i]['text'],
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: _selectedValue == i ?  AppColors.BUTTON_TEXT_COLOR : AppColors.TEXT_COLOR_GRAY,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          style: ButtonStyle(
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              ),
-            ),
-            backgroundColor: MaterialStateProperty.all<Color>(
-              _selectedValue == i ? AppColors.BUTTON_COLOR : AppColors.BUTTON_TEXT_COLOR,
-            ),
-            foregroundColor: MaterialStateProperty.all<Color>(
-              _selectedValue == i ? AppColors.BUTTON_TEXT_COLOR : AppColors.TEXT_COLOR_GRAY,
-            ),
-          ),
-          onPressed: () {
-            setState(() {
-              _selectedValue = i;
-            });
-            print('Selected value is: ${_buttonData[_selectedValue]['text']}');
-          },
-        ),
-      ),
-    );
-  }
-  return list;
-}
-
-
-  @override
-  void initState() {
-    super.initState();
-  }
- 
   @override
   Widget build(BuildContext context) {
-
     final currentUser = Provider.of<CurrentUserModel>(context);
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -138,9 +51,7 @@ List<Widget> _buildRadioButtons() {
                       color: AppColors.APPBAR_TEXT,
                     ),
                   ),
-                  SizedBox(
-                    width: 2,
-                  ),
+                  SizedBox(width: 2),
                   Container(
                     width: 50.0,
                     height: 50.0,
@@ -151,9 +62,7 @@ List<Widget> _buildRadioButtons() {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 12,
-                  ),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,17 +71,18 @@ List<Widget> _buildRadioButtons() {
                         Text(
                           "Bitácora",
                           style: TextStyle(
-                              color: AppColors.APPBAR_TEXT,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600),
+                            color: AppColors.APPBAR_TEXT,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                        SizedBox(
-                          height: 1,
-                        ),
+                        SizedBox(height: 1),
                         Text(
                           "Realiza tu seguimiento",
                           style: TextStyle(
-                              color: AppColors.APPBAR_TEXT, fontSize: 15),
+                            color: AppColors.APPBAR_TEXT,
+                            fontSize: 15,
+                          ),
                         ),
                       ],
                     ),
@@ -184,72 +94,90 @@ List<Widget> _buildRadioButtons() {
         ),
       ),
       body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/background.png'),
-              fit: BoxFit.cover,
-            ),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/background.png'),
+            fit: BoxFit.cover,
           ),
-          child: Container(
-             alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(
-                top: AppDimensions.APPBAR_HEIGHT + 20, bottom: 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,              
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:20, vertical:8.0),
-                  child: Text(
-                              "HOY • " + capitalize("${DateFormat.EEEE('es_ES').format(DateTime.now())}") + " ${DateFormat('d • M • y').format(DateTime.now())}",
-                          style: TextStyle(
-                              color: AppColors.APPBAR_TEXT, fontSize: 15),
-                        ),
+        ),
+        child: Container(
+          alignment: Alignment.topCenter,
+          margin:
+              EdgeInsets.only(top: AppDimensions.APPBAR_HEIGHT + 20, bottom: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8.0),
+                child: Text(
+                  "HOY • " +
+                      capitalize(
+                          "${DateFormat.EEEE('es_ES').format(DateTime.now())}") +
+                      " ${DateFormat('d • M • y').format(DateTime.now())}",
+                  style: TextStyle(color: AppColors.APPBAR_TEXT, fontSize: 15),
                 ),
-                Expanded(
-                    child: Container(
-                       alignment: Alignment.topCenter,
+              ),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.topCenter,
                   color: Colors.white,
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: ListView(
-                          children: [
-                            
-                            CustomParagraphField(
-                            icon: Icons.question_mark,
-                            controller: _reasonController,
-                            labelText: '¿Por qué te sientes asi?',
-                            labelHint: 'ex. problemas familiares'),                            
-                          ],
+                  child: ListView(
+                    padding: EdgeInsets.all(16.0),
+                    children: [
+                      CustomParagraphField(
+                        icon: Icons.question_mark,
+                        controller: _reasonController,
+                        labelText: '¿Por qué te sientes así?',
+                        labelHint: 'Ej. problemas familiares',
+                      ),
+                      if (_showError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'Por favor, escribe por qué te sientes así.',
+                            style: TextStyle(
+                                color: Colors.redAccent, fontSize: 14),
+                          ),
                         ),
+                    ],
                   ),
-                
-                )),
-                Align(
-                    alignment: Alignment.bottomCenter,
-                    child: BottomButton(
-                        isWhiteButton: false,
-                        text: "SIGUIENTE",
-                        tap: () {
-                          Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Bitacora4View(emoji,feeling, _reasonController.text.toString())),
-                          );                          
-                        })),
-              ],
-            ),
-         
-         
-          )),
-          
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: BottomButton(
+                  isWhiteButton: false,
+                  text: "SIGUIENTE",
+                  tap: () {
+                    if (_reasonController.text.trim().isEmpty) {
+                      setState(() {
+                        _showError = true;
+                      });
+                      return;
+                    }
 
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Bitacora4View(
+                            widget.emoji,
+                            widget.feeling,
+                            _reasonController.text.trim(),
+                            widget.binnacleId),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-}
 
-
-String capitalize(String s) {
-  if (s == null || s.isEmpty) {
-    return s;
+  String capitalize(String s) {
+    return s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : s;
   }
-  return s[0].toUpperCase() + s.substring(1);
 }

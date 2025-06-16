@@ -1,18 +1,10 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:sequitur_movil/components/bottom_button.dart';
 import 'package:sequitur_movil/models/appointment_model.dart';
-import 'package:sequitur_movil/models/bitacora_entry_model.dart';
-import 'package:sequitur_movil/views/bitacora_1_view.dart';
-import 'package:sequitur_movil/views/home_view.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:sequitur_movil/components/custom_button.dart';
-import 'package:sequitur_movil/components/custom_text_field.dart';
-import 'package:sequitur_movil/components/title_desc.dart';
-import 'package:sequitur_movil/models/chat_message_model.dart';
-import 'package:sequitur_movil/models/current_user_model.dart';
+
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
@@ -22,15 +14,15 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class AppointmentView extends StatefulWidget {
-   final int userId;
-    AppointmentView(this.userId);
+  final int userId;
+  AppointmentView(this.userId);
 
   @override
   _AppointmentViewState createState() => _AppointmentViewState();
 }
 
 class _AppointmentViewState extends State<AppointmentView> {
-  String url = "https://back-sequitur-production.up.railway.app/api/";
+  String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
   String aceptado = 'ACEPTAR';
 
   Map newMessage = new Map();
@@ -45,11 +37,13 @@ class _AppointmentViewState extends State<AppointmentView> {
 
   Future<String> getAppoints() async {
     dataAppoints = [];
- appointments = [];
+    appointments = [];
     _isLoading = true;
 
-    var responseRecs = await http
-        .get(Uri.parse(url + "students/"+ widget.userId.toString() +"/appointments"), headers: headers());
+    var responseRecs = await http.get(
+        Uri.parse(
+            url + "students/" + widget.userId.toString() + "/appointments"),
+        headers: headers());
 
     setState(() {
       var extractdataBitacora =
@@ -60,6 +54,8 @@ class _AppointmentViewState extends State<AppointmentView> {
 
       for (var info in dataAppoints) {
         appointments.add(Appointment(
+            id: info['id'],
+            psychologistId: info['psychologistId'],
             appointmentDate: DateTime.parse(info['appointmentDate']),
             appointmentTime: info['appointmentTime'],
             appointmentLocation: info['appointmentLocation'],
@@ -70,6 +66,23 @@ class _AppointmentViewState extends State<AppointmentView> {
 
     _isLoading = false;
     return responseRecs.body.toString();
+  }
+
+  Future<void> acceptAppointment(int studentId, int psychologistId,
+      int appointmentId, bool accepted) async {
+    final response = await http.patch(
+      Uri.parse(
+        "${url}students/$studentId/psychologists/$psychologistId/appointments/$appointmentId",
+      ),
+      headers: headers(),
+      body: jsonEncode({"accepted": accepted}),
+    );
+
+    if (response.statusCode == 200) {
+      print("Cita actualizada correctamente");
+    } else {
+      print("Error al actualizar la cita: ${response.statusCode}");
+    }
   }
 
   @override
@@ -163,7 +176,8 @@ class _AppointmentViewState extends State<AppointmentView> {
                   child: ListView.builder(
                     itemCount: appointments.length,
                     itemBuilder: (BuildContext context, int index) {
-                      String date = DateFormat('yMd').format(appointments[index].appointmentDate);
+                      String date = DateFormat('yMd')
+                          .format(appointments[index].appointmentDate);
                       String time = appointments[index].appointmentTime;
                       String location = appointments[index].appointmentLocation;
                       String reason = appointments[index].reason;
@@ -177,9 +191,11 @@ class _AppointmentViewState extends State<AppointmentView> {
                               padding: EdgeInsets.all(20),
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: AppColors.WHITE,
-                                borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0) , topRight: Radius.circular(8.0), )
-                              ),
+                                  color: AppColors.WHITE,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(8.0),
+                                    topRight: Radius.circular(8.0),
+                                  )),
                               child: Text(
                                 "Dia: ${date}\nHora: ${time}\nDonde: ${location}\nRazon: ${reason}",
                                 style: TextStyle(
@@ -197,25 +213,36 @@ class _AppointmentViewState extends State<AppointmentView> {
                                 children: [
                                   Expanded(
                                     child: ElevatedButton(
-                                      onPressed: () {
-                                          setState(() {
-                                            if (appointments[index].accepted == false){
-                                              appointments[index].accepted = true;
-                                            } else {
-                                              appointments[index].accepted = false;
-                                            }
-                                          });
-                                        // code for accepting
-                                      },
+                                      onPressed: appointments[index].accepted
+                                          ? null
+                                          : () async {
+                                              final appointment =
+                                                  appointments[index];
+                                              setState(() {
+                                                appointment.accepted = true;
+                                              });
+
+                                              await acceptAppointment(
+                                                widget.userId,
+                                                appointment.psychologistId,
+                                                appointment.id,
+                                                true,
+                                              );
+                                            },
                                       child: Text(
-                                        (appointments[index].accepted == false) ? 'ACEPTAR' : 'ACEPTADO',
+                                        (appointments[index].accepted == false)
+                                            ? 'ACEPTAR'
+                                            : 'ACEPTADO',
                                         style: TextStyle(
                                             fontSize: 12, letterSpacing: 1),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: (appointments[index].accepted == false) ? AppColors.BUTTON_COLOR : AppColors.GRIS, 
-                                        foregroundColor:
-                                            AppColors.WHITE,
+                                        backgroundColor:
+                                            (appointments[index].accepted ==
+                                                    false)
+                                                ? AppColors.BUTTON_COLOR
+                                                : AppColors.GRIS,
+                                        foregroundColor: AppColors.WHITE,
                                         padding: EdgeInsets.all(20),
                                         elevation: 0.0,
                                         shape: RoundedRectangleBorder(
@@ -229,8 +256,9 @@ class _AppointmentViewState extends State<AppointmentView> {
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        _showEditModal(context, appointments[0]);
-                                         getAppoints();
+                                        _showEditModal(
+                                            context, appointments[0]);
+                                        getAppoints();
                                       },
                                       child: Text('EDITAR',
                                           style: TextStyle(
@@ -260,7 +288,6 @@ class _AppointmentViewState extends State<AppointmentView> {
     );
   }
 
-
   void _showEditModal(BuildContext context, Appointment appointment) {
     showModalBottomSheet(
       context: context,
@@ -289,7 +316,6 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
     appointmentDateTime = widget.appointment.appointmentDate;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -297,7 +323,7 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            padding:EdgeInsets.all(30),
+            padding: EdgeInsets.all(30),
             child: Column(
               children: [
                 Text(
@@ -305,62 +331,69 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
+                ListTile(
+                  title: Text("Cambiar fecha"),
+                  subtitle:
+                      Text(DateFormat('d • M • y').format(appointmentDateTime)),
+                  trailing: IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      _selectDate(context);
+                    },
+                  ),
+                  tileColor: Colors
+                      .white, // Optional: Set a background color for the ListTile
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        8.0), // Adjust the border radius as needed
+                    side: BorderSide(
+                        color: Colors.grey,
+                        width: 1.0), // Specify the border color and width
+                  ),
+                ),
+                SizedBox(height: 8),
+                ListTile(
+                  title: Text("Cambiar hora"),
 
-                ListTile(
-  title: Text("Cambiar fecha"),
-  subtitle: Text(DateFormat('d • M • y').format(appointmentDateTime)),
-  trailing: IconButton(
-    icon: Icon(Icons.edit),
-    onPressed: () {
-      _selectDate(context);
-    },
-  ),
-  tileColor: Colors.white, // Optional: Set a background color for the ListTile
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(8.0), // Adjust the border radius as needed
-    side: BorderSide(color: Colors.grey, width: 1.0), // Specify the border color and width
-  ),
-),
- SizedBox(height: 8),
-                ListTile(
-  title: Text("Cambiar hora"),
-  
-  subtitle: Text(DateFormat('HH:mm').format(appointmentDateTime)),
-  trailing: IconButton(
-    icon: Icon(Icons.edit),
-    onPressed: () {
-      _selectTime(context);
-    },
-  ),
-  tileColor: Colors.white, // Optional: Set a background color for the ListTile
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(8.0), // Adjust the border radius as needed
-    side: BorderSide(color: Colors.grey, width: 1.0), // Specify the border color and width
-  ),
-),
-          
-          SizedBox(height: 16),
+                  subtitle:
+                      Text(DateFormat('HH:mm').format(appointmentDateTime)),
+                  trailing: IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      _selectTime(context);
+                    },
+                  ),
+                  tileColor: Colors
+                      .white, // Optional: Set a background color for the ListTile
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        8.0), // Adjust the border radius as needed
+                    side: BorderSide(
+                        color: Colors.grey,
+                        width: 1.0), // Specify the border color and width
+                  ),
+                ),
+                SizedBox(height: 16),
               ],
             ),
-          ),          
+          ),
           Align(
-                  alignment: Alignment.bottomCenter,
-                  child: BottomButton(
-                      isWhiteButton: false,
-                      text: "ACTUALIZAR",
-                      tap: () {                        
-                        setState(() {
-                           widget.appointment.appointmentDate = appointmentDateTime;
-                            Navigator.pop(context);
-                        }); 
-                       
-                      })),
+              alignment: Alignment.bottomCenter,
+              child: BottomButton(
+                  isWhiteButton: false,
+                  text: "ACTUALIZAR",
+                  tap: () {
+                    setState(() {
+                      widget.appointment.appointmentDate = appointmentDateTime;
+                      Navigator.pop(context);
+                    });
+                  })),
         ],
       ),
     );
   }
 
-   Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final ThemeData theme = Theme.of(context);
     final DateTime? selectedDate = await showDatePicker(
       context: context,
@@ -423,14 +456,7 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
   }
 }
 
-
-
-
-
-
 String capitalize(String s) {
-  if (s == null || s.isEmpty) {
-    return s;
-  }
+  if (s.isEmpty) return s;
   return s[0].toUpperCase() + s.substring(1);
 }

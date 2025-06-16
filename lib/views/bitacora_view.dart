@@ -6,11 +6,7 @@ import 'package:sequitur_movil/components/bottom_button.dart';
 import 'package:sequitur_movil/models/bitacora_entry_model.dart';
 import 'package:sequitur_movil/views/bitacora_1_view.dart';
 import 'package:sequitur_movil/views/home_view.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:sequitur_movil/components/custom_button.dart';
-import 'package:sequitur_movil/components/custom_text_field.dart';
-import 'package:sequitur_movil/components/title_desc.dart';
-import 'package:sequitur_movil/models/chat_message_model.dart';
+
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
@@ -29,97 +25,149 @@ class BitacoraView extends StatefulWidget {
 }
 
 class _BitacoraViewState extends State<BitacoraView> {
-  String url = "https://back-sequitur-production.up.railway.app/api/";
+  String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
 
   Map newMessage = new Map();
-  final _myMessageController = TextEditingController();
 
-  final _controller = ScrollController();
   int score = 0;
   List dataEmojis = [];
+  late String binnacleId;
 
   DateTime startDate = DateTime(2023, 5, 1);
   DateTime endDate = DateTime(2023, 5, 7);
   DateTime currentDate = DateTime.now();
   bool _hasEntryToday = false;
 
-  final List<Map<String, dynamic>> _emojiData = [
-    {'text': 'Miedo', 'image': 'assets/images/miedo.png'},
-    {'text': 'Enojo', 'image': 'assets/images/enojo.png'},
-    {'text': 'Aversión', 'image': 'assets/images/aversion.png'},
-    {'text': 'Tristeza', 'image': 'assets/images/tristeza.png'},
-    {'text': 'Felicidad', 'image': 'assets/images/felicidad.png'},
-    {'text': 'Sorpresa', 'image': 'assets/images/sorpresa.png'},
-  ];
-
   List<BitacoraEntry> entries = [];
   bool _isLoading = true;
 
   Future<String> getResults() async {
     _isLoading = true;
+    entries.clear();
 
     var responseResults = await http.get(
-        Uri.parse(url + "binnacles/"+ widget.userId+"/binnacleEntries"),
-        headers: headers());
+      Uri.parse(url + "binnacles/" + widget.userId + "/binnacleEntries"),
+      headers: headers(),
+    );
+
+    final extractdataBitacora = json.decode(responseResults.body);
+    dataEmojis = extractdataBitacora['content'];
+    print(dataEmojis);
+
+    entries.clear(); // Limpiar antes de agregar
+
+    bool entryHoy = false;
+
+    for (var info in dataEmojis) {
+      DateTime created = DateTime.parse(info['createdAt']);
+      entries.add(BitacoraEntry(
+        createdAt: created,
+        emoji: info['emoji'],
+        feeling: info['feeling'],
+        reason: info['reason'],
+      ));
+
+      if (DateFormat('d/M/y').format(created) ==
+          DateFormat('d/M/y').format(DateTime.now())) {
+        entryHoy = true;
+      }
+    }
 
     setState(() {
-      var extractdataBitacora = json.decode(responseResults.body);
-      dataEmojis = extractdataBitacora['content'];
-      print(dataEmojis);
-
-      for (var info in dataEmojis) {
-        entries.add(BitacoraEntry(
-            createdAt: DateTime.parse(info['createdAt']),
-            emoji: info['emoji'],
-            feeling: info['feeling'],
-            reason: info['reason']));
-        if ( DateFormat('d/M/y').format(DateTime.parse(info['createdAt'])) == DateFormat('d/M/y').format(DateTime.now())) {
-            _hasEntryToday = true;
-        }     
-      }
+      _hasEntryToday = entryHoy;
 
       if (entries.isNotEmpty) {
-          entries.sort((b, a) => b.createdAt.compareTo(a.createdAt));  
-          startDate = entries.first.createdAt;
-          endDate = currentDate.add(Duration(days: 2));  
+        entries.sort((b, a) => b.createdAt.compareTo(a.createdAt));
+        startDate = entries.first.createdAt;
+        endDate = currentDate.add(Duration(days: 2));
       } else {
-        startDate = currentDate.add(Duration(days: -2));  
-        endDate = currentDate.add(Duration(days: 1));  
+        startDate = currentDate.add(Duration(days: -2));
+        endDate = currentDate.add(Duration(days: 1));
       }
 
-      
-
+      _isLoading = false;
     });
 
-    _isLoading = false;
+    // 🔁 Si NO hay entrada hoy, redirigimos
+    if (!_hasEntryToday) {
+      Future.microtask(() {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Bitacora1View(binnacleId: binnacleId),
+          ),
+        );
+      });
+    }
+
     return responseResults.body.toString();
+  }
+
+  Future<void> fetchBinnacleId() async {
+    final response = await http.get(
+      Uri.parse("${url}students/${widget.userId}/binnacles"),
+      headers: headers(),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      binnacleId = data['id'].toString();
+
+      // Luego de obtener el ID, carga las entradas
+      await getResults();
+
+      // Verifica si ya existe entrada de hoy
+      if (!_hasEntryToday) {
+        // Redirige a la vista para registrar
+        Future.microtask(() {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => Bitacora1View(binnacleId: binnacleId),
+            ),
+          );
+        });
+      }
+    } else {
+      print("Error al obtener el binnacleId: ${response.statusCode}");
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    getResults();
+    print("DEBUG: userId es -> ${widget.userId}");
+    fetchBinnacleId();
   }
 
   @override
-  Widget build(BuildContext context) {    
-    List<DateTime> dates = List.generate(
-      endDate.difference(startDate).inDays + 1,
-      (index) => startDate.add(Duration(days: index)),
-    );
+  Widget build(BuildContext context) {
+    // Generar fechas únicas a partir de las entradas
+    Set<String> uniqueDates = {};
+    List<DateTime> dates = [];
 
-    if (entries.isNotEmpty) {
-      dates = [];
-      for (var entry in entries) {
+    for (var entry in entries) {
+      String formattedDate = DateFormat('yMd').format(entry.createdAt);
+      if (!uniqueDates.contains(formattedDate)) {
+        uniqueDates.add(formattedDate);
         dates.add(entry.createdAt);
       }
-      if (_hasEntryToday){} else{
-          dates.add(DateTime.now());
-      }      
-      dates.add(DateTime.now().add(Duration(days: 1)));
-    } 
+    }
 
-    final currentUser = Provider.of<CurrentUserModel>(context);
+    // Agregar hoy si aún no hay entrada
+    String todayFormatted = DateFormat('yMd').format(DateTime.now());
+    if (!uniqueDates.contains(todayFormatted)) {
+      uniqueDates.add(todayFormatted);
+      dates.add(DateTime.now());
+    }
+
+    // Agregar mañana si aún no está
+    String tomorrowFormatted =
+        DateFormat('yMd').format(DateTime.now().add(Duration(days: 1)));
+    if (!uniqueDates.contains(tomorrowFormatted)) {
+      dates.add(DateTime.now().add(Duration(days: 1)));
+    }
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -139,17 +187,14 @@ class _BitacoraViewState extends State<BitacoraView> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => HomeView(1)),
+                            MaterialPageRoute(
+                                builder: (context) => HomeView(1)),
                           );
                         },
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: AppColors.APPBAR_TEXT,
-                        ),
+                        icon: Icon(Icons.arrow_back,
+                            color: AppColors.APPBAR_TEXT),
                       ),
-                      SizedBox(
-                        width: 2,
-                      ),
+                      SizedBox(width: 2),
                       Container(
                         width: 50.0,
                         height: 50.0,
@@ -160,9 +205,7 @@ class _BitacoraViewState extends State<BitacoraView> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 12,
-                      ),
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,9 +218,7 @@ class _BitacoraViewState extends State<BitacoraView> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600),
                             ),
-                            SizedBox(
-                              height: 1,
-                            ),
+                            SizedBox(height: 1),
                             Text(
                               "Realiza tu seguimiento",
                               style: TextStyle(
@@ -195,42 +236,39 @@ class _BitacoraViewState extends State<BitacoraView> {
         ),
       ),
       body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/background.png'),
-              fit: BoxFit.cover,
-            ),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/background.png'),
+            fit: BoxFit.cover,
           ),
-          child: _isLoading
-              ? Center(
-                  child: LoadingAnimationWidget.beat(
-                      color: AppColors.WHITE, size: 50),
-                )
-              : Container(
-                  child: ListView.builder(
-                  itemCount: dates.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final DateTime date = dates[index];
-                    final List<BitacoraEntry> dateEntries = [];
+        ),
+        child: _isLoading
+            ? Center(
+                child: LoadingAnimationWidget.beat(
+                    color: AppColors.WHITE, size: 50),
+              )
+            : ListView.builder(
+                itemCount: dates.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final DateTime date = dates[index];
 
-                    entries.forEach((obj) async {
-                      if (DateFormat('yMd').format(date) ==
-                          DateFormat('yMd').format(obj.createdAt)) {
-                        dateEntries.add(obj);
-                      }
-                    });
+                  final List<BitacoraEntry> dateEntries = entries
+                      .where((entry) =>
+                          DateFormat('yMd').format(entry.createdAt) ==
+                          DateFormat('yMd').format(date))
+                      .toList();
 
-                    if (DateFormat('yMd').format(date) ==
-                        DateFormat('yMd').format(DateTime.now())) {
-                      return DateRectangle(
-                          date: date, isToday: true, entryData: dateEntries);
-                    } else {
-                      final DateTime date = dates[index];
-                      return DateRectangle(
-                          date: date, isToday: false, entryData: dateEntries);
-                    }
-                  },
-                ))),
+                  return DateRectangle(
+                    date: date,
+                    isToday: DateFormat('yMd').format(date) ==
+                        DateFormat('yMd').format(DateTime.now()),
+                    entryData: dateEntries,
+                    binnacleId: binnacleId,
+                    userId: widget.userId,
+                  );
+                },
+              ),
+      ),
     );
   }
 }
@@ -246,13 +284,17 @@ class DateRectangle extends StatelessWidget {
   final DateTime date;
   final bool isToday;
   final List<BitacoraEntry> entryData;
+  final String? binnacleId;
+  final String userId;
 
-  const DateRectangle(
-      {Key? key,
-      required this.date,
-      required this.isToday,
-      required this.entryData})
-      : super(key: key);
+  const DateRectangle({
+    Key? key,
+    required this.date,
+    required this.isToday,
+    required this.entryData,
+    required this.binnacleId,
+    required this.userId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +308,8 @@ class DateRectangle extends StatelessWidget {
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    (isToday ? "HOY • " : "") + "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}" ,
+                    (isToday ? "HOY • " : "") +
+                        "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}",
                     textAlign: TextAlign.left,
                     style:
                         TextStyle(color: AppColors.APPBAR_TEXT, fontSize: 15),
@@ -301,7 +344,8 @@ class DateRectangle extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Bitacora1View()),
+                                      builder: (context) => Bitacora1View(
+                                          binnacleId: binnacleId!)),
                                 );
                               },
                               child: Icon(
@@ -339,7 +383,8 @@ class DateRectangle extends StatelessWidget {
               Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    (isToday ? "HOY • " : "") + "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}" ,
+                    (isToday ? "HOY • " : "") +
+                        "${capitalize(DateFormat.EEEE('es_ES').format(date))} ${DateFormat('d').format(date)} de ${DateFormat.MMMM('es_ES').format(date)} del ${DateFormat('y').format(date)}",
                     textAlign: TextAlign.left,
                     style:
                         TextStyle(color: AppColors.APPBAR_TEXT, fontSize: 15),
@@ -405,7 +450,9 @@ class DateRectangle extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Bitacora1View()),
+                                        builder: (context) => Bitacora1View(
+                                              binnacleId: binnacleId!,
+                                            )),
                                   );
                                 },
                                 child: Icon(
@@ -421,37 +468,6 @@ class DateRectangle extends StatelessWidget {
                               ),
                             ],
                           ),
-
-                          //  Row(
-                          //   children: [
-                          //     SizedBox(
-                          //         width: 75,
-                          //       ),
-                          //     Expanded(child: Text( "¿Cómo te encuentras el dia de hoy? ¿Como te sientes?")),
-                          //     SizedBox(
-                          //         width: 15,
-                          //       ),
-                          //     FloatingActionButton(
-                          //         onPressed: () async {
-                          //     Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(builder: (context) => Bitacora1View()),
-                          //     );
-
-                          //         },
-                          //         child: Icon(
-                          //           Icons.add,
-                          //           color: Colors.white,
-                          //           size: 18,
-                          //         ),
-                          //         backgroundColor: AppColors.BUTTON_COLOR,
-                          //         elevation: 0,
-                          //       ),
-                          //       SizedBox(
-                          //         width: 25,
-                          //       ),
-                          //   ],
-                          // )
                         )
                       : Container(
                           child: ListView.builder(
@@ -496,8 +512,6 @@ class DateRectangle extends StatelessWidget {
 
   void _showModal(BuildContext context, String date, String emoji,
       String feeling, String reason) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {

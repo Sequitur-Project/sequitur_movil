@@ -1,14 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sequitur_movil/components/bottom_button.dart';
+
 import 'package:sequitur_movil/components/bottom_button_dot.dart';
 import 'package:sequitur_movil/views/recs_view.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:sequitur_movil/components/custom_button.dart';
-import 'package:sequitur_movil/components/custom_text_field.dart';
-import 'package:sequitur_movil/components/title_desc.dart';
-import 'package:sequitur_movil/models/chat_message_model.dart';
+
 import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
@@ -32,7 +29,7 @@ class ResultsView extends StatefulWidget {
 // ];
 
 class _ResultsViewState extends State<ResultsView> {
-  String url = "https://back-sequitur-production.up.railway.app/api/";
+  String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
 
   Map newMessage = new Map();
   final _myMessageController = TextEditingController();
@@ -43,25 +40,25 @@ class _ResultsViewState extends State<ResultsView> {
   String description = "";
   List dataResults = [];
 
-    List dataRecs = [];
-  
+  List dataRecs = [];
+
   List<String> recs = [];
 
   Future<String> getResults() async {
     var responseResults = await http.get(
         Uri.parse("${url}students/${widget.userId}/results"),
-        headers: headers());    
+        headers: headers());
 
     setState(() {
       var extractdataResults = json.decode(responseResults.body);
       dataResults = extractdataResults;
-      score = dataResults.last['score'] - dataResults[dataResults.length - 2]['score'];
+      score = dataResults.last['score'] -
+          dataResults[dataResults.length - 2]['score'];
       print(dataResults.last);
     });
 
     return responseResults.body.toString();
   }
-
 
   Future<String> getRecs() async {
     var responseRecs = await http.get(
@@ -69,15 +66,15 @@ class _ResultsViewState extends State<ResultsView> {
         headers: headers());
 
     setState(() {
-      var extractdataBitacora = json.decode(utf8.decode(responseRecs.bodyBytes));
+      var extractdataBitacora =
+          json.decode(utf8.decode(responseRecs.bodyBytes));
 
       dataRecs = extractdataBitacora['content'];
-      print(dataRecs); 
+      print(dataRecs);
 
       for (var info in dataRecs) {
         recs.add(info['text']);
       }
-
     });
     return responseRecs.body.toString();
   }
@@ -96,19 +93,23 @@ class _ResultsViewState extends State<ResultsView> {
       description = 'No es necesario tratamiento para la depresión.';
     } else if (score >= 1 && score <= 4) {
       depresion = 'Depresión Leve';
-      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. .';
+      description =
+          'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. .';
     } else if (score >= 5 && score <= 9) {
       depresion = 'Depresión Moderada';
-      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento.';
+      description =
+          'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento.';
     } else if (score >= 10 && score <= 14) {
       depresion = 'Depresión Mínima';
       description = 'Es posible no necesitar tratamiento para la depresión.';
     } else if (score >= 15 && score <= 19) {
       depresion = 'Depresión Moderadamente Severa';
-      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. Es posible se necesite medicamentos, terapia o una combinación de ambos.';
+      description =
+          'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. Es posible se necesite medicamentos, terapia o una combinación de ambos.';
     } else if (score >= 20 && score <= 27) {
       depresion = 'Depresión Severa';
-      description = 'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. Será necesario el tratamiento de la depresión con medicamentos, terapia o una combinación de ambos.';
+      description =
+          'Uno de nuestros psicologos se pondrá en contacto contigo para determinar el curso del tratamiento. Será necesario el tratamiento de la depresión con medicamentos, terapia o una combinación de ambos.';
     }
 
     final List<ChartData> chartData = [
@@ -190,75 +191,92 @@ class _ResultsViewState extends State<ResultsView> {
           ),
           child: Container(
             padding: EdgeInsets.only(
-                  top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 0),
+                top: AppDimensions.APPBAR_HEIGHT + 40, bottom: 0),
             child: Column(
-              
               children: [
                 Expanded(
                     child: Container(
-                       
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 38.0, vertical: 0),
-                        child: Center(
-                          child: SfRadialGauge(axes: <RadialAxis>[
-                                        RadialAxis(
-                            startAngle: 180, endAngle: 0, showTicks: false, showLabels: false,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 38.0, vertical: 0),
+                    child: Center(
+                      child: SfRadialGauge(axes: <RadialAxis>[
+                        RadialAxis(
+                            startAngle: 180,
+                            endAngle: 0,
+                            showTicks: false,
+                            showLabels: false,
                             minimum: 0,
                             maximum: 27,
                             axisLineStyle: const AxisLineStyle(
-                              thickness: 0.2,
-                              thicknessUnit: GaugeSizeUnit.factor,
-                              color: AppColors.BUTTON_TEXT_COLOR
-                            ),
-                            pointers: <GaugePointer>[                      
-                            RangePointer(value: score.toDouble(), sizeUnit:GaugeSizeUnit.factor, width:0.2, enableAnimation: true, color: AppColors.PRIMARY_COLOR)
-                                         ],
+                                thickness: 0.2,
+                                thicknessUnit: GaugeSizeUnit.factor,
+                                color: AppColors.BUTTON_TEXT_COLOR),
+                            pointers: <GaugePointer>[
+                              RangePointer(
+                                  value: score.toDouble(),
+                                  sizeUnit: GaugeSizeUnit.factor,
+                                  width: 0.2,
+                                  enableAnimation: true,
+                                  color: AppColors.PRIMARY_COLOR)
+                            ],
                             annotations: <GaugeAnnotation>[
-                                      GaugeAnnotation(angle: 90, positionFactor: 2,
-                                      widget: Column(
-                                        children: [
-                                          Text(score.toString(), style:
-                                          TextStyle(fontWeight: FontWeight.bold, fontSize: 40),),
-                                          Text('Posible', style:
-                                          TextStyle(fontSize: 15),),
-                                          Text(
-                                                depresion,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: Color.fromARGB(255, 31, 0, 0),
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w600),
-                                              ),
-                                          Text(
-                                                description,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: Color.fromARGB(255, 31, 0, 0),
-                                                    fontSize: 16,),
-                                              ),    
-                                        ],
+                              GaugeAnnotation(
+                                angle: 90,
+                                positionFactor: 2,
+                                widget: Column(
+                                  children: [
+                                    Text(
+                                      score.toString(),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 40),
+                                    ),
+                                    Text(
+                                      'Posible',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    Text(
+                                      depresion,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: Color.fromARGB(255, 31, 0, 0),
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Text(
+                                      description,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color.fromARGB(255, 31, 0, 0),
+                                        fontSize: 16,
                                       ),
-                                      )]             
-                            ),
-                                      ]),
-                        ),
-                      ),
-                    )),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ]),
+                      ]),
+                    ),
+                  ),
+                )),
                 Align(
-                  alignment: Alignment.bottomCenter,
-                  child: BottomButtonDot(
-                      isWhiteButton: false,
-                      text: "RECOMENDACIONES",
-                      circleText: recs.length.toString(),
-                      tap: () {                        
-                        setState(() {
-                             Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => RecsView(widget.userId)),
-                          );
-                        });                        
-                      })),
+                    alignment: Alignment.bottomCenter,
+                    child: BottomButtonDot(
+                        isWhiteButton: false,
+                        text: "RECOMENDACIONES",
+                        circleText: recs.length.toString(),
+                        tap: () {
+                          setState(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      RecsView(widget.userId)),
+                            );
+                          });
+                        })),
               ],
             ),
           )),

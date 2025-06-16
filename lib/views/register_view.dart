@@ -1,20 +1,14 @@
 import 'dart:convert';
 
-import 'package:provider/provider.dart';
-import 'package:sequitur_movil/components/custom_dropdown.dart';
-import 'package:sequitur_movil/models/current_user_model.dart';
-
 import 'package:flutter/material.dart';
 import 'package:sequitur_movil/components/bottom_button.dart';
 import 'package:sequitur_movil/components/custom_text_field.dart';
 import 'package:sequitur_movil/components/title_desc.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
 import 'package:sequitur_movil/models/university_model.dart';
-import 'package:sequitur_movil/models/user_model.dart';
-import 'package:sequitur_movil/resources/app_colors.dart';
-import 'package:sequitur_movil/views/home_view.dart';
+
 import 'package:http/http.dart' as http;
-import 'package:sequitur_movil/views/login_view.dart';
+
 import 'package:sequitur_movil/views/register_2_view.dart';
 
 class RegisterView extends StatefulWidget {
@@ -23,7 +17,7 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-  String url = "https://back-sequitur-production.up.railway.app/api/";
+  String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
 
   final _universityController = TextEditingController();
   List<UniversityModel> myUniversities = [];
@@ -93,99 +87,101 @@ class _RegisterViewState extends State<RegisterView> {
             return StatefulBuilder(
                 builder: (BuildContext context, StateSetter setModalState) {
               return Container(
-      height: MediaQuery.of(context).size.height * 0.8, // 80% of screen height
-      child: Column(
-        children: [
-          // Top text widget
-          Expanded(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: SingleChildScrollView(
+                height: MediaQuery.of(context).size.height *
+                    0.8, // 80% of screen height
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TitleDesc(
-                          title: 'REGISTRAR',
-                          description: 'Selecciona tu universidad.'),
-                      CustomTextField(
-                          icon: Icons.school,
-                          controller: _universityController,
-                          labelText: 'UNIVERSIDAD',
-                          labelHint: 'Selecciona tu universidad',
-                          error: _universityError,
-                          isReadOnly: true,
-                          tap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return SimpleDialog(
-                                  children: myUniversities
-                                      .map(
-                                        (option) => ListTile(
-                                          title: Text(option.name),
-                                          onTap: () {
-                                            setState(() {
-                                              _universityController.text =
-                                                  option.name;
-                                              _selectedOption = option.id;
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      )
-                                      .toList(),
-                                );
-                              },
-                            );
-                          }),
-                      // CustomDropdownWidget<UniversityModel>(
-                      //   items: myItems,
-                      //   hintText: 'Select an item',
-                      //   onChanged: (value) {
-                      //     // Do something with the selected item
-                      //   },
-                      //   displayTextBuilder: (item) => item.name,
-                      // ),
-                    ]),
-              ),
-            ),
-          ),
-          // Bottom text widget
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomButton(
-                  isWhiteButton: true,
-                  text: "YA TENGO CUENTA",
-                  tap: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  })),
+                  children: [
+                    // Top text widget
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: SingleChildScrollView(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TitleDesc(
+                                    title: 'REGISTRAR',
+                                    description: 'Selecciona tu universidad.'),
+                                CustomTextField(
+                                    icon: Icons.school,
+                                    controller: _universityController,
+                                    labelText: 'UNIVERSIDAD',
+                                    labelHint: 'Selecciona tu universidad',
+                                    error: _universityError,
+                                    isReadOnly: true,
+                                    tap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return SimpleDialog(
+                                            children: myUniversities
+                                                .map(
+                                                  (option) => ListTile(
+                                                    title: Text(option.name),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        _universityController
+                                                            .text = option.name;
+                                                        _selectedOption =
+                                                            option.id;
+                                                      });
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                )
+                                                .toList(),
+                                          );
+                                        },
+                                      );
+                                    }),
+                                // CustomDropdownWidget<UniversityModel>(
+                                //   items: myItems,
+                                //   hintText: 'Select an item',
+                                //   onChanged: (value) {
+                                //     // Do something with the selected item
+                                //   },
+                                //   displayTextBuilder: (item) => item.name,
+                                // ),
+                              ]),
+                        ),
+                      ),
+                    ),
+                    // Bottom text widget
+                    Align(
+                        alignment: Alignment.bottomCenter,
+                        child: BottomButton(
+                            isWhiteButton: true,
+                            text: "YA TENGO CUENTA",
+                            tap: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            })),
 
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomButton(
-                  isWhiteButton: false,
-                  text: "CONTINUAR",
-                  tap: () {
-                    if (_selectedOption == 0) {
-                      setModalState(() {
-                        _universityError = 'Selecciona tu universidad.';
-                      });
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Register2View(_selectedOption)),
-                      );
-                    }
-                  })),
-        ],
-      ),
-    );
+                    Align(
+                        alignment: Alignment.bottomCenter,
+                        child: BottomButton(
+                            isWhiteButton: false,
+                            text: "CONTINUAR",
+                            tap: () {
+                              if (_selectedOption == 0) {
+                                setModalState(() {
+                                  _universityError =
+                                      'Selecciona tu universidad.';
+                                });
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          Register2View(_selectedOption)),
+                                );
+                              }
+                            })),
+                  ],
+                ),
+              );
             });
           });
     });
   }
-
 }
