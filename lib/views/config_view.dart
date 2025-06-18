@@ -47,7 +47,6 @@ class _ConfigViewState extends State<ConfigView> {
 
   Future<String> getUser() async {
     print(userId);
-    //print(currentUserId);
     var response =
         await http.get(Uri.parse("${url}students/$userId"), headers: headers());
 

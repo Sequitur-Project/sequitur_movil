@@ -15,8 +15,9 @@ class Bitacora3View extends StatefulWidget {
   final String emoji;
   final String feeling;
   final String binnacleId;
+  final String userId;
 
-  Bitacora3View(this.emoji, this.feeling, this.binnacleId);
+  Bitacora3View(this.emoji, this.feeling, this.binnacleId, this.userId);
 
   @override
   _Bitacora3ViewState createState() => _Bitacora3ViewState();
@@ -164,7 +165,8 @@ class _Bitacora3ViewState extends State<Bitacora3View> {
                             widget.emoji,
                             widget.feeling,
                             _reasonController.text.trim(),
-                            widget.binnacleId),
+                            widget.binnacleId,
+                            widget.userId),
                       ),
                     );
                   },

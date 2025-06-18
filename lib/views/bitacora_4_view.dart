@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:sequitur_movil/components/bottom_button.dart';
@@ -19,8 +18,10 @@ class Bitacora4View extends StatefulWidget {
   final String feeling;
   final String reason;
   final String binnacleId;
+  final String userId;
 
-  Bitacora4View(this.emoji, this.feeling, this.reason, this.binnacleId);
+  Bitacora4View(
+      this.emoji, this.feeling, this.reason, this.binnacleId, this.userId);
 
   @override
   _Bitacora4ViewState createState() => _Bitacora4ViewState();
@@ -28,7 +29,6 @@ class Bitacora4View extends StatefulWidget {
 
 class _Bitacora4ViewState extends State<Bitacora4View> {
   final _extraController = TextEditingController();
-  String bitacoraId = "";
   final String url =
       "https://sequitur-backend-2025-production.up.railway.app/api/";
 
@@ -79,8 +79,7 @@ class _Bitacora4ViewState extends State<Bitacora4View> {
 
     try {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-            builder: (context) => BitacoraView(widget.binnacleId)),
+        MaterialPageRoute(builder: (context) => BitacoraView(widget.userId)),
         (route) => false,
       );
     } catch (e) {

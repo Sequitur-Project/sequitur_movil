@@ -31,7 +31,6 @@ class _RecsViewState extends State<RecsView> {
   int score = 0;
   List dataRecs = [];
 
-  //List<String> recs = [];
   List<RecsModel> recs = [];
   bool _isLoading = true;
 
@@ -54,7 +53,6 @@ class _RecsViewState extends State<RecsView> {
       for (var info in dataRecs) {
         recs.add(RecsModel(
             text: info['text'], date: DateTime.parse(info['createdAt'])));
-        //recs.add(info['text']);
       }
 
       recs.sort((b, a) => a.date.compareTo(b.date));

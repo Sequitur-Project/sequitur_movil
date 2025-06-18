@@ -71,7 +71,6 @@ class _LoginViewState extends State<LoginView> {
         zipCode: 'zipCode1',
         ruc: 'ruc1'));
 
-    //print(dataUsers);
     return response.body.toString();
   }
 
@@ -97,7 +96,7 @@ class _LoginViewState extends State<LoginView> {
                 height: 180 / 1.5,
               ),
             ),
-          ), /* add child content here */
+          ),
         ),
         bottomNavigationBar: BottomButton(
             isWhiteButton: true,
@@ -112,11 +111,9 @@ class _LoginViewState extends State<LoginView> {
                       return ChangeNotifierProvider(
                           create: (_) => CurrentUserModel(),
                           child: Container(
-                            height: MediaQuery.of(context).size.height *
-                                0.8, // 80% of screen height
+                            height: MediaQuery.of(context).size.height * 0.8,
                             child: Column(
                               children: [
-                                // Top text widget
                                 Expanded(
                                   child: Align(
                                     alignment: Alignment.topLeft,
@@ -146,7 +143,6 @@ class _LoginViewState extends State<LoginView> {
                                         ]),
                                   ),
                                 ),
-                                // Bottom text widget
                                 Align(
                                     alignment: Alignment.bottomCenter,
                                     child: BottomButton(
@@ -160,7 +156,6 @@ class _LoginViewState extends State<LoginView> {
                                                     RegisterView()),
                                           );
                                         })),
-
                                 Align(
                                     alignment: Alignment.bottomCenter,
                                     child: BottomButton(

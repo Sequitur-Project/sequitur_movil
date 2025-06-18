@@ -32,9 +32,6 @@ class _ResultsViewState extends State<ResultsView> {
   String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
 
   Map newMessage = new Map();
-  final _myMessageController = TextEditingController();
-
-  final _controller = ScrollController();
   int score = 0;
   String depresion = "";
   String description = "";

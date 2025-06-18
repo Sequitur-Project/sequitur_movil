@@ -25,7 +25,6 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = Provider.of<CurrentUserModel>(context);
     DateTime? cumple = widget.user!.birthday;
     String birth = DateFormat('d/M/y').format(cumple!);
 
@@ -58,14 +57,11 @@ class _ProfileViewState extends State<ProfileView> {
                     width: 100.0,
                     height: 100.0,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                          75), // Half of the width or height to create a circle
-
+                      borderRadius: BorderRadius.circular(75),
                       child: Stack(
                         children: [
                           Container(
-                            color: AppColors
-                                .GRIS, // Replace with your desired circle color
+                            color: AppColors.GRIS,
                           ),
                           Center(
                             child: Image.asset(

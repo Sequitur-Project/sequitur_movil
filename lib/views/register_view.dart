@@ -60,7 +60,7 @@ class _RegisterViewState extends State<RegisterView> {
             fit: BoxFit.cover,
           ),
         ),
-        child: null /* add child content here */,
+        child: null,
       ),
     );
   }
@@ -78,7 +78,7 @@ class _RegisterViewState extends State<RegisterView> {
           context: context,
           isScrollControlled: true,
           transitionAnimationController: AnimationController(
-            duration: const Duration(milliseconds: 0), // set the duration here
+            duration: const Duration(milliseconds: 0),
             vsync: Navigator.of(context),
           ),
           isDismissible: false,
@@ -87,11 +87,9 @@ class _RegisterViewState extends State<RegisterView> {
             return StatefulBuilder(
                 builder: (BuildContext context, StateSetter setModalState) {
               return Container(
-                height: MediaQuery.of(context).size.height *
-                    0.8, // 80% of screen height
+                height: MediaQuery.of(context).size.height * 0.8,
                 child: Column(
                   children: [
-                    // Top text widget
                     Expanded(
                       child: Align(
                         alignment: Alignment.topLeft,
@@ -134,19 +132,10 @@ class _RegisterViewState extends State<RegisterView> {
                                         },
                                       );
                                     }),
-                                // CustomDropdownWidget<UniversityModel>(
-                                //   items: myItems,
-                                //   hintText: 'Select an item',
-                                //   onChanged: (value) {
-                                //     // Do something with the selected item
-                                //   },
-                                //   displayTextBuilder: (item) => item.name,
-                                // ),
                               ]),
                         ),
                       ),
                     ),
-                    // Bottom text widget
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: BottomButton(
@@ -156,7 +145,6 @@ class _RegisterViewState extends State<RegisterView> {
                               Navigator.pop(context);
                               Navigator.pop(context);
                             })),
-
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: BottomButton(

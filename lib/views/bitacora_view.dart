@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:sequitur_movil/components/bottom_button.dart';
 import 'package:sequitur_movil/models/bitacora_entry_model.dart';
 import 'package:sequitur_movil/views/bitacora_1_view.dart';
 import 'package:sequitur_movil/views/home_view.dart';
 
-import 'package:sequitur_movil/models/current_user_model.dart';
 import 'package:sequitur_movil/resources/app_colors.dart';
 import 'package:sequitur_movil/resources/app_dimens.dart';
 import 'package:sequitur_movil/endpoints/endpoints.dart';
@@ -46,7 +45,7 @@ class _BitacoraViewState extends State<BitacoraView> {
     entries.clear();
 
     var responseResults = await http.get(
-      Uri.parse(url + "binnacles/" + widget.userId + "/binnacleEntries"),
+      Uri.parse(url + "binnacles/" + binnacleId + "/binnacleEntries"),
       headers: headers(),
     );
 
@@ -54,7 +53,7 @@ class _BitacoraViewState extends State<BitacoraView> {
     dataEmojis = extractdataBitacora['content'];
     print(dataEmojis);
 
-    entries.clear(); // Limpiar antes de agregar
+    entries.clear();
 
     bool entryHoy = false;
 
@@ -94,7 +93,8 @@ class _BitacoraViewState extends State<BitacoraView> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Bitacora1View(binnacleId: binnacleId),
+            builder: (context) =>
+                Bitacora1View(binnacleId: binnacleId, userId: widget.userId),
           ),
         );
       });
@@ -113,17 +113,16 @@ class _BitacoraViewState extends State<BitacoraView> {
       final data = json.decode(response.body);
       binnacleId = data['id'].toString();
 
-      // Luego de obtener el ID, carga las entradas
       await getResults();
 
       // Verifica si ya existe entrada de hoy
       if (!_hasEntryToday) {
-        // Redirige a la vista para registrar
         Future.microtask(() {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => Bitacora1View(binnacleId: binnacleId),
+              builder: (_) =>
+                  Bitacora1View(binnacleId: binnacleId, userId: widget.userId),
             ),
           );
         });
@@ -142,7 +141,6 @@ class _BitacoraViewState extends State<BitacoraView> {
 
   @override
   Widget build(BuildContext context) {
-    // Generar fechas únicas a partir de las entradas
     Set<String> uniqueDates = {};
     List<DateTime> dates = [];
 
@@ -284,7 +282,7 @@ class DateRectangle extends StatelessWidget {
   final DateTime date;
   final bool isToday;
   final List<BitacoraEntry> entryData;
-  final String? binnacleId;
+  final String binnacleId;
   final String userId;
 
   const DateRectangle({
@@ -345,7 +343,9 @@ class DateRectangle extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => Bitacora1View(
-                                          binnacleId: binnacleId!)),
+                                            binnacleId: binnacleId,
+                                            userId: userId,
+                                          )),
                                 );
                               },
                               child: Icon(
@@ -451,7 +451,8 @@ class DateRectangle extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => Bitacora1View(
-                                              binnacleId: binnacleId!,
+                                              binnacleId: binnacleId,
+                                              userId: userId,
                                             )),
                                   );
                                 },

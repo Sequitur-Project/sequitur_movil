@@ -30,8 +30,6 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   String url = "https://sequitur-backend-2025-production.up.railway.app/api";
   List<dynamic> dataConversation = [];
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final currentUser = Provider.of<CurrentUserModel>;
   String dataConvoId = '0';
 
@@ -47,7 +45,6 @@ class _HomeViewState extends State<HomeView> {
 
   String convoId = '';
 
-  bool _isHomeForm = true;
   bool _isLoading = true;
   bool _hasEntryToday = false;
 
@@ -121,8 +118,7 @@ class _HomeViewState extends State<HomeView> {
         final creationResponse = await http.post(
           Uri.parse("$url/students/${widget.userId}/binnacles"),
           headers: headers(),
-          body: json
-              .encode({}), // puede estar vacío si el backend no requiere campos
+          body: json.encode({}),
         );
 
         if (creationResponse.statusCode == 201) {
@@ -216,7 +212,7 @@ class _HomeViewState extends State<HomeView> {
 
   Future<void> initializeData() async {
     await getAppoints();
-    await ensureBitacoraExists(); // Nuevo paso aquí
+    await ensureBitacoraExists();
     await getBitacora();
   }
 
@@ -414,7 +410,8 @@ class _HomeViewState extends State<HomeView> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (_) => Bitacora1View(
-                                                  binnacleId: binnacleId)),
+                                                  binnacleId: binnacleId,
+                                                  userId: userId)),
                                         );
                                       }
                                     } else {
@@ -483,9 +480,6 @@ class _HomeViewState extends State<HomeView> {
                     ],
                   ),
                 ),
-
-                // Aquí podrías poner un botón flotante o algo útil, si lo necesitas
-                // Eliminado el Row vacío con SizedBox
               ],
             );
           },

@@ -12,8 +12,9 @@ import 'package:intl/intl.dart';
 class Bitacora2View extends StatefulWidget {
   final String emoji;
   final String binnacleId;
+  final String userId;
 
-  Bitacora2View(this.emoji, this.binnacleId);
+  Bitacora2View(this.emoji, this.binnacleId, this.userId);
 
   @override
   _Bitacora2ViewState createState() => _Bitacora2ViewState();
@@ -313,8 +314,8 @@ class _Bitacora2ViewState extends State<Bitacora2View> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Bitacora3View(
-                            widget.emoji, feeling, widget.binnacleId),
+                        builder: (context) => Bitacora3View(widget.emoji,
+                            feeling, widget.binnacleId, widget.userId),
                       ),
                     );
                   }

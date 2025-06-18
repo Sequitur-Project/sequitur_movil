@@ -26,9 +26,6 @@ class _AppointmentViewState extends State<AppointmentView> {
   String aceptado = 'ACEPTAR';
 
   Map newMessage = new Map();
-  final _myMessageController = TextEditingController();
-
-  final _controller = ScrollController();
   int score = 0;
   List dataAppoints = [];
 
@@ -341,20 +338,15 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
                       _selectDate(context);
                     },
                   ),
-                  tileColor: Colors
-                      .white, // Optional: Set a background color for the ListTile
+                  tileColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        8.0), // Adjust the border radius as needed
-                    side: BorderSide(
-                        color: Colors.grey,
-                        width: 1.0), // Specify the border color and width
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: Colors.grey, width: 1.0),
                   ),
                 ),
                 SizedBox(height: 8),
                 ListTile(
                   title: Text("Cambiar hora"),
-
                   subtitle:
                       Text(DateFormat('HH:mm').format(appointmentDateTime)),
                   trailing: IconButton(
@@ -363,14 +355,10 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
                       _selectTime(context);
                     },
                   ),
-                  tileColor: Colors
-                      .white, // Optional: Set a background color for the ListTile
+                  tileColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        8.0), // Adjust the border radius as needed
-                    side: BorderSide(
-                        color: Colors.grey,
-                        width: 1.0), // Specify the border color and width
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: Colors.grey, width: 1.0),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -404,7 +392,7 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
         return Theme(
           data: theme.copyWith(
             colorScheme: theme.colorScheme.copyWith(
-              primary: AppColors.BUTTON_COLOR, // Set your desired color here
+              primary: AppColors.BUTTON_COLOR,
             ),
           ),
           child: child!,
@@ -434,7 +422,7 @@ class _EditAppointmentModalState extends State<EditAppointmentModal> {
         return Theme(
           data: theme.copyWith(
             colorScheme: theme.colorScheme.copyWith(
-              primary: AppColors.BUTTON_COLOR, // Set your desired color here
+              primary: AppColors.BUTTON_COLOR,
             ),
           ),
           child: child!,

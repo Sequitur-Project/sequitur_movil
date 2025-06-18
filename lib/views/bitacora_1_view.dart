@@ -12,8 +12,8 @@ import 'package:intl/intl.dart';
 
 class Bitacora1View extends StatefulWidget {
   final String binnacleId;
-
-  Bitacora1View({required this.binnacleId});
+  final String userId;
+  Bitacora1View({required this.binnacleId, required this.userId});
 
   @override
   _Bitacora1ViewState createState() => _Bitacora1ViewState();
@@ -22,7 +22,7 @@ class Bitacora1View extends StatefulWidget {
 class _Bitacora1ViewState extends State<Bitacora1View> {
   String url = "https://sequitur-backend-2025-production.up.railway.app/api/";
 
-  int _selectedValue = -1; // Ninguno seleccionado inicialmente
+  int _selectedValue = -1;
   String emoji = '';
   bool _showValidationMessage = false;
 
@@ -85,7 +85,6 @@ class _Bitacora1ViewState extends State<Bitacora1View> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = Provider.of<CurrentUserModel>(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -217,10 +216,8 @@ class _Bitacora1ViewState extends State<Bitacora1View> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Bitacora2View(
-                          emoji.toLowerCase(),
-                          widget.binnacleId,
-                        ),
+                        builder: (context) => Bitacora2View(emoji.toLowerCase(),
+                            widget.binnacleId, widget.userId),
                       ),
                     );
                   },
